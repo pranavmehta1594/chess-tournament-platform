@@ -56,7 +56,10 @@ export default function LiveMatchPage() {
   const isBlack = user?.id === matchData?.blackPlayerId;
   const isSpectator = !isWhite && !isBlack;
   const orientation: 'white' | 'black' = isBlack ? 'black' : 'white';
-  const isMyTurn = (isWhite && turn === 'w') || (isBlack && turn === 'b');
+
+  // Derive active turn directly from the authoritative FEN string (field 2)
+  const activeTurn = (fen ? fen.split(' ')[1] : turn || 'w') as 'w' | 'b';
+  const isMyTurn = (isWhite && activeTurn === 'w') || (isBlack && activeTurn === 'b');
 
   // Socket Connection and Event Listeners
   useEffect(() => {
@@ -273,7 +276,7 @@ export default function LiveMatchPage() {
           <ClockTimer
             whiteTimeRemainingMs={whiteMs}
             blackTimeRemainingMs={blackMs}
-            turn={turn}
+            turn={activeTurn}
             isGameOver={matchStatus === 'COMPLETED'}
             whitePlayerName={matchData.whitePlayer?.name || 'White'}
             blackPlayerName={matchData.blackPlayer?.name || 'Black'}
@@ -284,11 +287,11 @@ export default function LiveMatchPage() {
             <div className="flex items-center gap-2">
               <span
                 className={`w-2.5 h-2.5 rounded-full ${
-                  turn === 'w' ? 'bg-slate-100 ring-2 ring-amber-500' : 'bg-slate-900 ring-1 ring-slate-600'
+                  activeTurn === 'w' ? 'bg-slate-100 ring-2 ring-amber-500' : 'bg-slate-900 ring-1 ring-slate-600'
                 }`}
               />
               <span className="font-semibold text-slate-300">
-                Turn: {turn === 'w' ? 'White' : 'Black'}
+                Turn: {activeTurn === 'w' ? 'White' : 'Black'}
               </span>
               {isMyTurn && !isSpectator && matchStatus === 'IN_PROGRESS' && (
                 <span className="text-amber-400 font-bold animate-pulse">

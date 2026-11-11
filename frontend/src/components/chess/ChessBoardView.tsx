@@ -65,8 +65,8 @@ export function ChessBoardView({
     try {
       const tempChess = new Chess(fen);
       const isCapture = tempChess.get(targetSquare as any) !== null;
-      const pieceStr = typeof piece === 'string' ? piece : piece?.name || '';
-      const isPawn = pieceStr.toLowerCase().includes('p');
+      const pieceOnSource = tempChess.get(sourceSquare as any);
+      const isPawn = pieceOnSource?.type === 'p';
       const isPromotion = isPawn && (targetSquare.endsWith('8') || targetSquare.endsWith('1'));
 
       const move = tempChess.move({
@@ -144,6 +144,12 @@ export function ChessBoardView({
           position: fen,
           boardOrientation: orientation,
           allowDragging: !disabled && !isSpectator && isTurn,
+          canDragPiece: ({ piece }: any) => {
+            if (disabled || isSpectator || !isTurn) return false;
+            const pieceColor = piece?.pieceType?.[0];
+            const myColor = orientation === 'white' ? 'w' : 'b';
+            return pieceColor === myColor;
+          },
           onPieceDrop: handlePieceDrop as any,
           onSquareClick: onSquareClick as any,
           squareStyles: customSquareStyles,
