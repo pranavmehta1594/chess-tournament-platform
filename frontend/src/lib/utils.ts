@@ -21,3 +21,4 @@ export function formatDate(dateStr: string | Date): string {
   const minutes = d.getMinutes().toString().padStart(2, '0');
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
+

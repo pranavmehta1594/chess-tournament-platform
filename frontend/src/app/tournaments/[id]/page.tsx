@@ -55,6 +55,7 @@ export default function TournamentDetailPage() {
   const [activeTab, setActiveTab] = useState<'leaderboard' | 'matches' | 'participants'>('leaderboard');
   const [isSearching, setIsSearching] = useState(false);
   const [searchTimer, setSearchTimer] = useState(0);
+  const [queueLength, setQueueLength] = useState(1);
 
   // Fetch tournament details
   const { data: tournament, isLoading } = useQuery({
@@ -154,6 +155,8 @@ export default function TournamentDetailPage() {
       if (res && !res.success) {
         setIsSearching(false);
         alert(res.error || 'Failed to enter queue');
+      } else if (res && res.queueLength) {
+        setQueueLength(res.queueLength);
       }
     });
   };
@@ -244,21 +247,26 @@ export default function TournamentDetailPage() {
                         Find Opponent
                       </Button>
                     ) : (
-                      <div className="flex items-center gap-3 bg-amber-950/40 border border-amber-600/50 rounded-xl p-3">
-                        <div className="flex items-center gap-2">
-                          <Search className="w-4 h-4 text-amber-400 animate-spin" />
-                          <span className="text-xs font-semibold text-amber-300">
-                            Searching for opponent ({searchTimer}s)...
-                          </span>
+                      <div className="flex flex-col gap-2 bg-amber-950/40 border border-amber-600/50 rounded-xl p-4 max-w-sm">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <Search className="w-4 h-4 text-amber-400 animate-spin shrink-0" />
+                            <span className="text-xs font-bold text-amber-300">
+                              Searching for opponent ({searchTimer}s)
+                            </span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleCancelSearching}
+                            className="text-xs text-slate-400 hover:text-rose-400 h-7 px-2"
+                          >
+                            Cancel
+                          </Button>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleCancelSearching}
-                          className="text-xs text-slate-400 hover:text-rose-400"
-                        >
-                          Cancel
-                        </Button>
+                        <p className="text-[11px] text-slate-400 leading-tight">
+                          Waiting for another player. Open an incognito window, log in as Student 2 (or any other student), and click <strong>&quot;Find Opponent&quot;</strong> to start!
+                        </p>
                       </div>
                     )}
                   </div>

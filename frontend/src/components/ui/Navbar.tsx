@@ -9,6 +9,7 @@ import { Badge } from './Badge';
 import { Trophy, Swords, User, LogOut, ChevronDown, ShieldAlert } from 'lucide-react';
 
 const SEED_USERS = [
+  { role: 'STUDENT', email: 'tradercompany@gmail.com', name: 'Trader (Student)' },
   { role: 'COACH', email: 'coach@kingdom.chess', name: 'Coach Magnus' },
   { role: 'STUDENT', email: 'student1@kingdom.chess', name: 'Aryan Sharma (S1)' },
   { role: 'STUDENT', email: 'student2@kingdom.chess', name: 'Diya Patel (S2)' },
@@ -144,3 +145,4 @@ export function Navbar() {
     </nav>
   );
 }
+

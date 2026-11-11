@@ -6,17 +6,31 @@ const SOCKET_URL =
 let socket: Socket | null = null;
 
 export function getSocket(token?: string): Socket {
+  const authToken =
+    token ||
+    (typeof window !== 'undefined'
+      ? localStorage.getItem('chess_token') || undefined
+      : undefined);
+
   if (!socket) {
     socket = io(SOCKET_URL, {
       withCredentials: true,
-      autoConnect: false,
+      autoConnect: true,
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,
-      auth: token ? { token } : undefined,
+      transports: ['websocket', 'polling'],
+      auth: authToken ? { token: authToken } : undefined,
     });
-  } else if (token && socket.auth) {
-    socket.auth = { token };
+  } else {
+    if (authToken && socket.auth) {
+      socket.auth = { token: authToken };
+    } else if (authToken) {
+      socket.auth = { token: authToken };
+    }
+    if (!socket.connected) {
+      socket.connect();
+    }
   }
 
   return socket;

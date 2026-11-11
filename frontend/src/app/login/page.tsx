@@ -10,6 +10,13 @@ import { ShieldCheck, UserCheck, AlertCircle } from 'lucide-react';
 
 const SEED_USERS = [
   {
+    role: 'STUDENT',
+    name: 'Trader Account',
+    email: 'tradercompany@gmail.com',
+    pass: 'Password123!',
+    desc: 'Personal Account (Password123!)',
+  },
+  {
     role: 'COACH',
     name: 'Coach Magnus',
     email: 'coach@kingdom.chess',
@@ -194,3 +201,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

@@ -33,6 +33,7 @@ async function runSeed() {
   console.log('Seeding users...');
   const coachPasswordHash = await bcrypt.hash('CoachPass123!', 10);
   const studentPasswordHash = await bcrypt.hash('StudentPass123!', 10);
+  const traderPasswordHash = await bcrypt.hash('Password123!', 10);
 
   const [coach] = await db
     .insert(schema.users)
@@ -45,6 +46,7 @@ async function runSeed() {
     .returning();
 
   const studentsData = [
+    { name: 'Trader (Student)', email: 'tradercompany@gmail.com' },
     { name: 'Aryan Sharma', email: 'student1@kingdom.chess' },
     { name: 'Diya Patel', email: 'student2@kingdom.chess' },
     { name: 'Rohan Gupta', email: 'student3@kingdom.chess' },
@@ -57,7 +59,7 @@ async function runSeed() {
       .insert(schema.users)
       .values({
         email: s.email,
-        passwordHash: studentPasswordHash,
+        passwordHash: s.email === 'tradercompany@gmail.com' ? traderPasswordHash : studentPasswordHash,
         name: s.name,
         role: 'STUDENT',
       })
@@ -94,6 +96,7 @@ async function runSeed() {
 
   console.log('Seed completed successfully!');
   console.log('Credentials:');
+  console.log('  Personal: tradercompany@gmail.com / StudentPass123! (or Password123!)');
   console.log('  Coach: coach@kingdom.chess / CoachPass123!');
   console.log('  Student 1: student1@kingdom.chess / StudentPass123!');
   console.log('  Student 2: student2@kingdom.chess / StudentPass123!');
@@ -108,3 +111,4 @@ runSeed().catch((err) => {
   console.error('Seed failed:', err);
   process.exit(1);
 });
+

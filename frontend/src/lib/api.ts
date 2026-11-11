@@ -50,3 +50,4 @@ export async function fetchApi<T = any>(
 
   return data as T;
 }
+
