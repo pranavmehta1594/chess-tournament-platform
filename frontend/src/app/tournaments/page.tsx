@@ -152,6 +152,9 @@ export default function TournamentsPage() {
         backgroundColor: '#F5EBDD',
       }}
     >
+      {/* Soft White Atmospheric Wash Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-white/85 via-white/60 via-50% to-white/10 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/5 pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Header Section */}
