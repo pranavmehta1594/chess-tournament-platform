@@ -88,3 +88,4 @@ export function WithAuth({
 
   return <>{children}</>;
 }
+
