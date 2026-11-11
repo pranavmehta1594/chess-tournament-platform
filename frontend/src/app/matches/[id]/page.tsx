@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../../providers/auth-context';
+import { withAuth } from '../../../components/auth/WithAuth';
 import { fetchApi } from '../../../lib/api';
 import { getSocket } from '../../../lib/socket';
 import { ChessBoardView } from '../../../components/chess/ChessBoardView';
@@ -26,7 +27,7 @@ import {
 } from 'lucide-react';
 import { Chess } from 'chess.js';
 
-export default function LiveMatchPage() {
+function LiveMatchPage() {
   const params = useParams();
   const matchId = params?.id as string;
   const router = useRouter();
@@ -390,3 +391,5 @@ export default function LiveMatchPage() {
     </div>
   );
 }
+
+export default withAuth(LiveMatchPage);

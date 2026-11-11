@@ -51,8 +51,15 @@ const SEED_USERS = [
 ];
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { user, login, isLoading: authLoading } = useAuth();
   const router = useRouter();
+
+  // If user is already authenticated, redirect to /tournaments immediately
+  React.useEffect(() => {
+    if (!authLoading && user) {
+      router.replace('/tournaments');
+    }
+  }, [user, authLoading, router]);
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -60,6 +67,18 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showDemoAccounts, setShowDemoAccounts] = useState(false);
+
+  // Show loading while verifying auth state or redirecting logged-in user
+  if (authLoading || user) {
+    return (
+      <div className="min-h-screen bg-[#F5EBDD] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-[#C49A52] border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-semibold text-[#887765]">Loading Arena...</span>
+        </div>
+      </div>
+    );
+  }
 
   // Normalize username or email
   const resolveEmail = (input: string) => {

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../providers/auth-context';
+import { withAuth } from '../../../components/auth/WithAuth';
 import { fetchApi } from '../../../lib/api';
 import { getSocket } from '../../../lib/socket';
 import { Button } from '../../../components/ui/Button';
@@ -45,7 +46,7 @@ interface MatchItem {
   startedAt: string;
 }
 
-export default function TournamentDetailPage() {
+function TournamentDetailPage() {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
@@ -523,3 +524,5 @@ export default function TournamentDetailPage() {
     </div>
   );
 }
+
+export default withAuth(TournamentDetailPage);

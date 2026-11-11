@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../providers/auth-context';
+import { withAuth } from '../../components/auth/WithAuth';
 import { fetchApi } from '../../lib/api';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
@@ -11,7 +12,7 @@ import { Button } from '../../components/ui/Button';
 import { formatDate } from '../../lib/utils';
 import { Swords, Trophy, Clock, ArrowRight, Eye } from 'lucide-react';
 
-export default function MyMatchesPage() {
+function MyMatchesPage() {
   const { user } = useAuth();
   const router = useRouter();
 
@@ -120,4 +121,6 @@ export default function MyMatchesPage() {
     </div>
   );
 }
+
+export default withAuth(MyMatchesPage);
 
