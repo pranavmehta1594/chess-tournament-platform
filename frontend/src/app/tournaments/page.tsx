@@ -145,16 +145,13 @@ export default function TournamentsPage() {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-64px)] bg-[#F5EBDD] overflow-hidden">
-      {/* Background chess knight graphic watermark on right side */}
-      <div
-        className="pointer-events-none fixed right-0 bottom-0 top-16 w-full max-w-2xl bg-right-bottom bg-no-repeat bg-contain opacity-25 hidden sm:block"
-        style={{
-          backgroundImage: "url('/images/chess-login-bg.jpg')",
-          maskImage: 'linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 80%)',
-          WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 80%)',
-        }}
-      />
+    <div
+      className="relative min-h-[calc(100vh-64px)] bg-cover bg-right sm:bg-center bg-no-repeat bg-fixed overflow-x-hidden"
+      style={{
+        backgroundImage: "url('/images/tournaments-bg.jpg')",
+        backgroundColor: '#F5EBDD',
+      }}
+    >
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Header Section */}
