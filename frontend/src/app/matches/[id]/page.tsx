@@ -9,6 +9,7 @@ import { getSocket } from '../../../lib/socket';
 import { ChessBoardView } from '../../../components/chess/ChessBoardView';
 import { ClockTimer } from '../../../components/chess/ClockTimer';
 import { PgnMoveList } from '../../../components/chess/PgnMoveList';
+import { CapturedPieces } from '../../../components/chess/CapturedPieces';
 import { GameOverModal } from '../../../components/chess/GameOverModal';
 import { DrawOfferModal } from '../../../components/chess/DrawOfferModal';
 import { Button } from '../../../components/ui/Button';
@@ -20,6 +21,8 @@ import {
   Eye,
   ShieldCheck,
   AlertTriangle,
+  Skull,
+  ScrollText,
 } from 'lucide-react';
 import { Chess } from 'chess.js';
 
@@ -44,6 +47,9 @@ export default function LiveMatchPage() {
   // Draw offer state
   const [isDrawOfferModalOpen, setIsDrawOfferModalOpen] = useState(false);
   const [drawOfferFromUser, setDrawOfferFromUser] = useState('');
+
+  // Right panel tab (defaults to Eliminated Pieces)
+  const [rightPanelTab, setRightPanelTab] = useState<'eliminated' | 'pgn'>('eliminated');
 
   // Fetch match initial details via REST
   const { data: matchData, isLoading } = useQuery({
@@ -319,9 +325,44 @@ export default function LiveMatchPage() {
           />
         </div>
 
-        {/* PGN & Info Column */}
-        <div className="lg:col-span-4 h-[580px] flex flex-col space-y-4">
-          <PgnMoveList pgn={pgn} />
+        {/* Right Column: Eliminated Pieces (Default) & PGN History */}
+        <div className="lg:col-span-4 h-[580px] flex flex-col space-y-3">
+          <div className="flex bg-slate-900 border border-slate-800 rounded-xl p-1 gap-1 text-xs font-semibold">
+            <button
+              onClick={() => setRightPanelTab('eliminated')}
+              className={`flex-1 py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+                rightPanelTab === 'eliminated'
+                  ? 'bg-amber-600 text-white shadow-sm font-bold'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Skull className="w-4 h-4" />
+              Eliminated Pieces
+            </button>
+            <button
+              onClick={() => setRightPanelTab('pgn')}
+              className={`flex-1 py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+                rightPanelTab === 'pgn'
+                  ? 'bg-amber-600 text-white shadow-sm font-bold'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <ScrollText className="w-4 h-4" />
+              PGN History
+            </button>
+          </div>
+
+          <div className="flex-1 min-h-0">
+            {rightPanelTab === 'eliminated' ? (
+              <CapturedPieces
+                fen={fen}
+                whitePlayerName={matchData.whitePlayer?.name || 'White'}
+                blackPlayerName={matchData.blackPlayer?.name || 'Black'}
+              />
+            ) : (
+              <PgnMoveList pgn={pgn} />
+            )}
+          </div>
         </div>
       </div>
 
