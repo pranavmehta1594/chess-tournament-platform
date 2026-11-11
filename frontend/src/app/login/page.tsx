@@ -110,7 +110,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center lg:justify-end px-4 sm:px-8 lg:pr-20 xl:pr-28 py-10 relative overflow-hidden"
+      className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center lg:justify-end px-4 sm:px-8 lg:pr-20 xl:pr-32 py-8 relative overflow-hidden"
       style={{
         backgroundImage: "url('/images/chess-login-bg.jpg')",
       }}
@@ -118,12 +118,12 @@ export default function LoginPage() {
       {/* Subtle ambient darkening vignette overlay */}
       <div className="absolute inset-0 bg-black/25 pointer-events-none" />
 
-      {/* Main Login Card */}
-      <div className="relative z-10 w-full max-w-[440px] bg-[#FFF9EF] border border-[#E4D5C0] rounded-[32px] p-8 sm:p-10 shadow-2xl backdrop-blur-sm">
+      {/* Main Login Card - Compact Size */}
+      <div className="relative z-10 w-full max-w-[360px] bg-[#FFF9EF] border border-[#E4D5C0] rounded-[28px] p-6 sm:p-7 shadow-2xl backdrop-blur-sm">
         {/* Emblem / Brand Header */}
         <div className="flex flex-col items-center text-center">
           {/* Logo Emblem with Crown & Laurel Wreath */}
-          <div className="relative w-20 h-16 flex items-center justify-center">
+          <div className="relative w-14 h-11 flex items-center justify-center">
             <svg
               viewBox="0 0 100 80"
               fill="none"
@@ -171,33 +171,33 @@ export default function LoginPage() {
           </div>
 
           {/* Title */}
-          <h1 className="font-serif text-[26px] font-bold text-[#261A13] tracking-tight mt-1">
+          <h1 className="font-serif text-[22px] font-bold text-[#261A13] tracking-tight mt-0.5">
             Kingdom of Chess
           </h1>
 
           {/* Subtitle */}
-          <h2 className="text-[22px] font-bold text-[#261A13] mt-3">
+          <h2 className="text-[17px] font-bold text-[#261A13] mt-2">
             Welcome Back
           </h2>
-          <p className="text-xs sm:text-sm text-[#887765] mt-0.5">
+          <p className="text-[11px] text-[#887765] mt-0.5">
             Sign in to continue your chess journey
           </p>
         </div>
 
         {/* Error notification */}
         {error && (
-          <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+          <div className="mt-3 p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+            <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-600" />
             <span>{error}</span>
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-4 space-y-3">
           {/* Email / Username field */}
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#887765]">
-              <Mail className="w-5 h-5" />
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#887765]">
+              <Mail className="w-4 h-4" />
             </div>
             <input
               type="text"
@@ -205,15 +205,15 @@ export default function LoginPage() {
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
               placeholder="Email or Username"
-              className="w-full h-12 pl-11 pr-4 bg-[#FBF5EC] border border-[#E4D5C0] rounded-xl text-sm text-[#261A13] placeholder-[#9C8B7A] focus:outline-none focus:ring-2 focus:ring-[#8B5738]/40 focus:border-[#8B5738] transition-all"
+              className="w-full h-10 pl-9 pr-3.5 bg-[#FBF5EC] border border-[#E4D5C0] rounded-xl text-xs text-[#261A13] placeholder-[#9C8B7A] focus:outline-none focus:ring-2 focus:ring-[#8B5738]/40 focus:border-[#8B5738] transition-all"
             />
           </div>
 
           {/* Password field */}
           <div>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#887765]">
-                <Lock className="w-5 h-5" />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#887765]">
+                <Lock className="w-4 h-4" />
               </div>
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -221,23 +221,23 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full h-12 pl-11 pr-11 bg-[#FBF5EC] border border-[#E4D5C0] rounded-xl text-sm text-[#261A13] placeholder-[#9C8B7A] focus:outline-none focus:ring-2 focus:ring-[#8B5738]/40 focus:border-[#8B5738] transition-all"
+                className="w-full h-10 pl-9 pr-10 bg-[#FBF5EC] border border-[#E4D5C0] rounded-xl text-xs text-[#261A13] placeholder-[#9C8B7A] focus:outline-none focus:ring-2 focus:ring-[#8B5738]/40 focus:border-[#8B5738] transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#887765] hover:text-[#261A13] transition-colors"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#887765] hover:text-[#261A13] transition-colors"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
 
             {/* Forgot Password link */}
-            <div className="text-right mt-2">
+            <div className="text-right mt-1.5">
               <button
                 type="button"
                 onClick={() => alert('Please contact your tournament coach or admin to reset your password.')}
-                className="text-xs font-semibold text-[#8B5738] hover:text-[#3B2418] transition-colors"
+                className="text-[11px] font-semibold text-[#8B5738] hover:text-[#3B2418] transition-colors"
               >
                 Forgot Password?
               </button>
@@ -248,77 +248,19 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full h-12 bg-[#3B2418] hover:bg-[#8B5738] text-white font-semibold text-sm sm:text-base rounded-xl transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.99]"
+            className="w-full h-10.5 bg-[#3B2418] hover:bg-[#8B5738] text-white font-semibold text-xs sm:text-sm rounded-xl transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.99] mt-2"
           >
             {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               'Log In'
             )}
           </button>
         </form>
 
-        {/* Divider */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#E4D5C0]" />
-          </div>
-          <div className="relative flex justify-center text-xs">
-            <span className="bg-[#FFF9EF] px-3 text-[#887765] font-normal">
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        {/* Social Buttons */}
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => handleQuickLogin('tradercompany@gmail.com', 'Password123!')}
-            className="flex items-center justify-center gap-2 h-11 px-4 rounded-xl border border-[#E4D5C0] bg-white/70 hover:bg-[#F3E7D5] text-[#261A13] text-sm font-medium transition-colors"
-          >
-            {/* Google Colorful Icon */}
-            <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-              />
-            </svg>
-            <span>Google</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleQuickLogin('coach@kingdom.chess', 'CoachPass123!')}
-            className="flex items-center justify-center gap-2 h-11 px-4 rounded-xl border border-[#E4D5C0] bg-white/70 hover:bg-[#F3E7D5] text-[#261A13] text-sm font-medium transition-colors"
-          >
-            {/* GitHub Icon */}
-            <svg className="w-4 h-4 shrink-0 fill-[#261A13]" viewBox="0 0 24 24">
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-              />
-            </svg>
-            <span>GitHub</span>
-          </button>
-        </div>
-
         {/* Footer Link */}
-        <div className="text-center mt-6">
-          <p className="text-xs sm:text-sm text-[#887765]">
+        <div className="text-center mt-3.5">
+          <p className="text-[11px] text-[#887765]">
             Don’t have an account?{' '}
             <button
               type="button"
@@ -334,39 +276,39 @@ export default function LoginPage() {
         </div>
 
         {/* Assessment Quick-Access Drawer for Evaluators */}
-        <div className="mt-5 pt-4 border-t border-[#E4D5C0]/60">
+        <div className="mt-3.5 pt-3 border-t border-[#E4D5C0]/60">
           <button
             type="button"
             onClick={() => setShowDemoAccounts(!showDemoAccounts)}
-            className="w-full flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-[#887765] hover:text-[#261A13] transition-colors py-1"
+            className="w-full flex items-center justify-between text-[10px] font-semibold uppercase tracking-wider text-[#887765] hover:text-[#261A13] transition-colors py-0.5"
           >
             <span className="flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#C49A52]" />
+              <Sparkles className="w-3 h-3 text-[#C49A52]" />
               Quick Demo Accounts
             </span>
-            {showDemoAccounts ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            {showDemoAccounts ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
           </button>
 
           {showDemoAccounts && (
-            <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto pr-1">
+            <div className="mt-2 space-y-1 max-h-40 overflow-y-auto pr-1">
               {SEED_USERS.map((u) => (
                 <button
                   key={u.email}
                   type="button"
                   onClick={() => handleQuickLogin(u.email, u.pass)}
                   disabled={isLoading}
-                  className="w-full p-2 rounded-lg bg-[#FBF5EC] hover:bg-[#F3E7D5] border border-[#E4D5C0] text-left transition-all flex items-center justify-between text-xs group"
+                  className="w-full p-1.5 rounded-lg bg-[#FBF5EC] hover:bg-[#F3E7D5] border border-[#E4D5C0] text-left transition-all flex items-center justify-between text-[11px] group"
                 >
                   <div className="truncate pr-2">
-                    <span className="font-semibold text-[#261A13] group-hover:text-[#8B5738] transition-colors">
+                    <span className="font-semibold text-[#261A13] group-hover:text-[#8B5738] transition-colors block leading-tight">
                       {u.name}
                     </span>
-                    <span className="text-[10px] text-[#887765] block truncate">
+                    <span className="text-[9px] text-[#887765] block truncate leading-tight">
                       {u.email}
                     </span>
                   </div>
                   <span
-                    className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0 ${
+                    className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase shrink-0 ${
                       u.role === 'COACH'
                         ? 'bg-[#C49A52]/20 text-[#8B5738] border border-[#C49A52]/40'
                         : 'bg-[#3B2418]/10 text-[#3B2418] border border-[#3B2418]/20'
