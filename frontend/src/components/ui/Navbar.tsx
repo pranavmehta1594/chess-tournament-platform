@@ -4,9 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../providers/auth-context';
-import { Button } from './Button';
-import { Badge } from './Badge';
-import { Trophy, Swords, User, LogOut, ChevronDown, ShieldAlert } from 'lucide-react';
+import { Trophy, Swords, User, LogOut, ChevronDown } from 'lucide-react';
 
 const SEED_USERS = [
   { role: 'STUDENT', email: 'tradercompany@gmail.com', name: 'Trader (Student)' },
@@ -31,59 +29,61 @@ export function Navbar() {
   if (!user) return null;
 
   return (
-    <nav className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
+    <nav className="border-b border-[#2A180E] bg-[#3B2418] sticky top-0 z-40 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          {/* Brand */}
-          <div className="flex items-center gap-6">
+          {/* Brand & Left Navigation */}
+          <div className="flex items-center gap-7">
             <Link href="/tournaments" className="flex items-center gap-2.5 group">
-              <span className="text-2xl">♚</span>
+              <span className="text-2xl text-[#C49A52] group-hover:scale-105 transition-transform">
+                ♚
+              </span>
               <div>
-                <span className="font-extrabold text-amber-500 tracking-tight text-lg group-hover:text-amber-400 transition-colors">
+                <span className="font-extrabold text-white tracking-wider text-base sm:text-lg block leading-tight">
                   KINGDOM
                 </span>
-                <span className="text-xs uppercase tracking-widest text-slate-400 block -mt-1 font-semibold">
+                <span className="text-[10px] uppercase tracking-widest text-[#C49A52] block font-bold leading-none">
                   OF CHESS
                 </span>
               </div>
             </Link>
 
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-2">
               <Link
                 href="/tournaments"
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                   pathname.startsWith('/tournaments')
-                    ? 'bg-slate-800 text-amber-400'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-900'
+                    ? 'bg-[#8B5738] text-white shadow-sm font-semibold'
+                    : 'text-[#E4D5C0] hover:text-white hover:bg-[#4E3020]'
                 }`}
               >
-                <Trophy className="w-4 h-4" />
+                <Trophy className="w-4 h-4 text-[#C49A52]" />
                 Tournaments
               </Link>
 
               {user.role === 'STUDENT' && (
                 <Link
                   href="/my-matches"
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                  className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                     pathname === '/my-matches'
-                      ? 'bg-slate-800 text-amber-400'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-900'
+                      ? 'bg-[#8B5738] text-white shadow-sm font-semibold'
+                      : 'text-[#E4D5C0] hover:text-white hover:bg-[#4E3020]'
                   }`}
                 >
-                  <Swords className="w-4 h-4" />
+                  <Swords className="w-4 h-4 text-[#C49A52]" />
                   My Match History
                 </Link>
               )}
             </div>
           </div>
 
-          {/* User & Actions */}
+          {/* Right User Actions */}
           <div className="flex items-center gap-3">
             {/* Quick Switcher dropdown for Evaluators */}
             <div className="relative">
               <button
                 onClick={() => setShowSwitcher(!showSwitcher)}
-                className="flex items-center gap-2 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-[#8B5738]/80 bg-[#2C1910] text-[#E4D5C0] hover:border-[#C49A52] hover:text-white transition-colors"
                 title="Quick switch account for testing"
               >
                 <span>Switch User</span>
@@ -91,58 +91,60 @@ export function Navbar() {
               </button>
 
               {showSwitcher && (
-                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-slate-800 bg-slate-900 shadow-xl py-2 z-50">
-                  <div className="px-3 py-1.5 text-[11px] font-semibold uppercase text-slate-500 tracking-wider">
+                <div className="absolute right-0 mt-2 w-60 rounded-xl border border-[#8B5738] bg-[#3B2418] shadow-2xl py-2 z-50">
+                  <div className="px-3 py-1.5 text-[11px] font-bold uppercase text-[#C49A52] tracking-wider border-b border-[#2A180E] mb-1">
                     Fast Account Switcher
                   </div>
                   {SEED_USERS.map((u) => (
                     <button
                       key={u.email}
                       onClick={() => switchAccount(u.email, u.role)}
-                      className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-slate-800 transition-colors ${
+                      className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-[#8B5738]/40 transition-colors ${
                         user.email === u.email
-                          ? 'text-amber-400 font-bold bg-amber-950/20'
-                          : 'text-slate-300'
+                          ? 'text-[#C49A52] font-bold bg-[#2A180E]'
+                          : 'text-[#E4D5C0]'
                       }`}
                     >
-                      <div className="truncate">
+                      <div className="truncate pr-2">
                         <div>{u.name}</div>
-                        <div className="text-[10px] text-slate-500">{u.email}</div>
+                        <div className="text-[10px] text-[#A89887] truncate">{u.email}</div>
                       </div>
-                      <Badge
-                        variant={u.role === 'COACH' ? 'warning' : 'info'}
-                        className="text-[10px] scale-90"
+                      <span
+                        className={`text-[9px] px-2 py-0.5 rounded font-bold uppercase shrink-0 ${
+                          u.role === 'COACH'
+                            ? 'bg-[#C49A52]/20 text-[#C49A52] border border-[#C49A52]/40'
+                            : 'bg-[#8B5738]/30 text-[#E4D5C0] border border-[#8B5738]/40'
+                        }`}
                       >
                         {u.role}
-                      </Badge>
+                      </span>
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Current user badge */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800">
-              <User className="w-4 h-4 text-slate-400" />
-              <span className="text-sm font-medium text-slate-200">{user.name}</span>
-              <Badge variant={user.role === 'COACH' ? 'warning' : 'info'}>
-                {user.role === 'COACH' ? '♚ Coach' : '♟ Student'}
-              </Badge>
+            {/* Current user container pill */}
+            <div className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-[#2A170F] border border-[#8B5738]/50">
+              <User className="w-4 h-4 text-[#C49A52]" />
+              <span className="text-xs sm:text-sm font-medium text-white">{user.name}</span>
+              <span className="bg-[#8B5738] text-white text-[11px] font-semibold px-2 py-0.5 rounded flex items-center gap-1">
+                <span>{user.role === 'COACH' ? '♚' : '♟'}</span>
+                <span>{user.role === 'COACH' ? 'Coach' : 'Student'}</span>
+              </span>
             </div>
 
-            <Button
-              variant="ghost"
-              size="sm"
+            {/* Sign out button */}
+            <button
               onClick={logout}
               title="Sign out"
-              className="text-slate-400 hover:text-rose-400"
+              className="p-1.5 rounded-lg text-[#E4D5C0] hover:text-[#C49A52] hover:bg-[#4E3020] transition-colors"
             >
               <LogOut className="w-4 h-4" />
-            </Button>
+            </button>
           </div>
         </div>
       </div>
     </nav>
   );
 }
-

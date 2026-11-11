@@ -17,8 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark h-full">
-      <body className="min-h-full flex flex-col bg-slate-950 text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950">
+    <html lang="en" className="h-full">
+      <body className="min-h-full flex flex-col bg-[#F5EBDD] text-[#261A13] antialiased selection:bg-[#C49A52] selection:text-[#3B2418]">
         <QueryProvider>
           <AuthProvider>
             <Suspense fallback={null}>
@@ -28,7 +28,7 @@ export default function RootLayout({
               <Suspense
                 fallback={
                   <div className="min-h-screen flex items-center justify-center">
-                    <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-10 h-10 border-4 border-[#C49A52] border-t-transparent rounded-full animate-spin" />
                   </div>
                 }
               >
