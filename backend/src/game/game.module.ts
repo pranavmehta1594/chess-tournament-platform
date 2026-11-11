@@ -10,3 +10,4 @@ import { LeaderboardModule } from '../leaderboard/leaderboard.module.js';
   exports: [GameEngineService, MatchmakingService, GameGateway],
 })
 export class GameModule {}
+

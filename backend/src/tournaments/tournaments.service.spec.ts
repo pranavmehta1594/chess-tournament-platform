@@ -52,3 +52,4 @@ describe('TournamentsService (Join rules & Time control parsing)', () => {
     await expect(service.joinTournament('t2', 's1')).rejects.toThrow(BadRequestException);
   });
 });
+

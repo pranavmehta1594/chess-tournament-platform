@@ -36,3 +36,4 @@ export class UpdateTournamentDto {
   @IsString()
   winnerId?: string;
 }
+

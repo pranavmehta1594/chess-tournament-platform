@@ -201,3 +201,4 @@ npm test
 - ✅ **Move-List Review Navigation**: Click any move in the PGN list to inspect past positions.
 - ✅ **Zero-Asset Procedural Audio**: Move, capture, check, and victory sound effects synthesized directly using the Web Audio API.
 - ✅ **Fast Account Switcher**: 1-click account switcher for seamless testing during reviews.
+

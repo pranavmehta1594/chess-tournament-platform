@@ -5,3 +5,4 @@ export class AddStudentDto {
   @IsNotEmpty({ message: 'studentId cannot be empty' })
   studentId!: string;
 }
+

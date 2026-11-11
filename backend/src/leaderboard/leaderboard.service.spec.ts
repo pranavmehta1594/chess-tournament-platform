@@ -58,3 +58,4 @@ describe('LeaderboardService (Deterministic Logic)', () => {
     expect(standings[2].rank).toBe(3);
   });
 });
+

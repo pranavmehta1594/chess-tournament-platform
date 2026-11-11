@@ -141,3 +141,4 @@ export const matchMovesRelations = relations(matchMoves, ({ one }) => ({
     references: [matches.id],
   }),
 }));
+

@@ -10,3 +10,4 @@ import { LeaderboardModule } from '../leaderboard/leaderboard.module.js';
   exports: [TournamentsService],
 })
 export class TournamentsModule {}
+

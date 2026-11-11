@@ -185,3 +185,4 @@ export class LeaderboardService {
     return this.refreshTournamentStandings(tournamentId);
   }
 }
+

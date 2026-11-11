@@ -7,3 +7,4 @@ import { DbService } from './db.service.js';
   exports: [DbService],
 })
 export class DbModule {}
+

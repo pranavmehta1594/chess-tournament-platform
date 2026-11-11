@@ -18,3 +18,4 @@ export class RegisterDto {
   @IsEnum(['COACH', 'STUDENT'], { message: 'Role must be either COACH or STUDENT' })
   role?: 'COACH' | 'STUDENT';
 }
+

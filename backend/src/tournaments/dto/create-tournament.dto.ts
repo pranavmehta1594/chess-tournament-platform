@@ -33,3 +33,4 @@ export class CreateTournamentDto {
   @IsEnum(['DRAFT', 'OPEN', 'ONGOING', 'COMPLETED'])
   status?: 'DRAFT' | 'OPEN' | 'ONGOING' | 'COMPLETED';
 }
+
