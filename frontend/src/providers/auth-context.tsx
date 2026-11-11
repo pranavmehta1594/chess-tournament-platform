@@ -1,0 +1,120 @@
+'use client';
+
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { fetchApi } from '../lib/api';
+import { getSocket, disconnectSocket } from '../lib/socket';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: 'COACH' | 'STUDENT';
+}
+
+interface AuthContextType {
+  user: User | null;
+  token: string | null;
+  isLoading: boolean;
+  login: (email: string, pass: string) => Promise<User>;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  const refreshUser = async () => {
+    try {
+      const data = await fetchApi<User>('/auth/me');
+      setUser(data);
+      // Connect socket with session
+      const socket = getSocket(token || undefined);
+      if (!socket.connected) {
+        socket.connect();
+      }
+    } catch {
+      setUser(null);
+      disconnectSocket();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Check saved token in localStorage if available
+    const savedToken = typeof window !== 'undefined' ? localStorage.getItem('chess_token') : null;
+    if (savedToken) {
+      setToken(savedToken);
+    }
+    refreshUser();
+  }, []);
+
+  const login = async (email: string, pass: string): Promise<User> => {
+    setIsLoading(true);
+    try {
+      const result = await fetchApi<{ user: User; token: string }>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password: pass }),
+      });
+
+      setUser(result.user);
+      setToken(result.token);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('chess_token', result.token);
+      }
+
+      // Initialize socket with token
+      const socket = getSocket(result.token);
+      socket.connect();
+
+      return result.user;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await fetchApi('/auth/logout', { method: 'POST' });
+    } catch {
+      // Ignore logout errors
+    } finally {
+      setUser(null);
+      setToken(null);
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('chess_token');
+      }
+      disconnectSocket();
+      router.push('/login');
+    }
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        isLoading,
+        login,
+        logout,
+        refreshUser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
