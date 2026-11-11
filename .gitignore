@@ -5,6 +5,9 @@ frontend/dist/
 backend/dist/
 frontend/build/
 backend/build/
+frontend/.next/
+.next/
+powershell.cmd
 .env
 .env.*
 !.env.example
