@@ -89,7 +89,19 @@ export class GameEngineService {
       .limit(1);
 
     const chess = new Chess();
-    if (dbMatch.finalFen) {
+    if (dbMatch.pgn) {
+      try {
+        chess.loadPgn(dbMatch.pgn);
+      } catch {
+        if (dbMatch.finalFen) {
+          try {
+            chess.load(dbMatch.finalFen);
+          } catch {
+            chess.reset();
+          }
+        }
+      }
+    } else if (dbMatch.finalFen) {
       try {
         chess.load(dbMatch.finalFen);
       } catch {
@@ -246,6 +258,17 @@ export class GameEngineService {
       fenAfter: state.chess.fen(),
       timeSpentMs: elapsed,
     });
+
+    // Persist current board state, PGN, and clocks into matches table
+    await this.dbService.db
+      .update(schema.matches)
+      .set({
+        finalFen: state.chess.fen(),
+        pgn: state.chess.pgn(),
+        whiteTimeRemainingMs: state.whiteTimeRemainingMs,
+        blackTimeRemainingMs: state.blackTimeRemainingMs,
+      })
+      .where(eq(schema.matches.id, state.matchId));
 
     // Check game termination conditions
     if (state.chess.isCheckmate()) {
