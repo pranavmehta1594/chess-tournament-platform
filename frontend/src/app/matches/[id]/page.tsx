@@ -67,8 +67,8 @@ export default function LiveMatchPage() {
     socket.emit('match:join', { matchId }, (res: any) => {
       if (res && res.success && res.data) {
         const d = res.data;
-        setFen(d.fen);
-        setPgn(d.pgn);
+        setFen(d.fen || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+        setPgn(d.pgn || '');
         setTurn(d.turn);
         setWhiteMs(d.whiteTimeRemainingMs);
         setBlackMs(d.blackTimeRemainingMs);
@@ -95,7 +95,7 @@ export default function LiveMatchPage() {
         setReason(data.reason);
         setWinnerId(data.winnerId);
         if (data.finalFen) setFen(data.finalFen);
-        if (data.pgn) setPgn(data.pgn);
+        if (data.pgn != null) setPgn(data.pgn);
         setIsGameOverModalOpen(true);
       }
     };
@@ -129,9 +129,9 @@ export default function LiveMatchPage() {
   useEffect(() => {
     if (matchData) {
       if (matchData.finalFen) setFen(matchData.finalFen);
-      if (matchData.pgn) setPgn(matchData.pgn);
-      setWhiteMs(matchData.whiteTimeRemainingMs);
-      setBlackMs(matchData.blackTimeRemainingMs);
+      if (matchData.pgn != null) setPgn(matchData.pgn);
+      if (matchData.whiteTimeRemainingMs != null) setWhiteMs(matchData.whiteTimeRemainingMs);
+      if (matchData.blackTimeRemainingMs != null) setBlackMs(matchData.blackTimeRemainingMs);
       if (matchData.status === 'COMPLETED') {
         setMatchStatus('COMPLETED');
         setResult(matchData.result);

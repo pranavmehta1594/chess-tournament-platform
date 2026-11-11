@@ -4,20 +4,21 @@ import React, { useEffect, useRef } from 'react';
 import { ScrollText } from 'lucide-react';
 
 interface PgnMoveListProps {
-  pgn: string;
+  pgn?: string | null;
   onSelectMoveIndex?: (index: number) => void;
   selectedMoveIndex?: number | null;
 }
 
 export function PgnMoveList({
-  pgn,
+  pgn = '',
   onSelectMoveIndex,
   selectedMoveIndex,
 }: PgnMoveListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Parse moves from PGN string
-  const cleanPgn = pgn.replace(/\[.*?\]\s*/g, '').trim();
+  const safePgn = typeof pgn === 'string' ? pgn : '';
+  const cleanPgn = safePgn.replace(/\[.*?\]\s*/g, '').trim();
   const rawTokens = cleanPgn.split(/\s+/).filter(Boolean);
 
   const movePairs: { num: number; white: string; black?: string; whiteIdx: number; blackIdx?: number }[] = [];
