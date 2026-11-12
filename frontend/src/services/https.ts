@@ -20,6 +20,22 @@ export const https = axios.create({
   },
 });
 
+// The API also returns the JWT in the login response. Re-send that token on
+// every client-side request so authentication does not depend on a
+// cross-origin cookie being accepted by the browser (some mobile browsers
+// block or omit those cookies even when the login request succeeds).
+https.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('chess_token');
+
+    if (token && !config.headers.Authorization) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+
+  return config;
+});
+
 https.interceptors.response.use(
   (response) => {
     const payload = response.data;
