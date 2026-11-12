@@ -212,7 +212,7 @@ function TournamentsPage() {
             {user?.role === 'COACH' && (
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-4 py-2 bg-[#3B2418] hover:bg-[#8B5738] text-white text-xs font-semibold rounded-xl"
+                className="px-4 py-2 bg-[#3B2418] hover:bg-[#8B5738] text-white text-xs font-semibold rounded-xl cursor-pointer"
               >
                 Create Tournament
               </button>
