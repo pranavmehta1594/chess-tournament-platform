@@ -46,11 +46,10 @@ export function Navbar() {
             <div className="hidden md:flex items-center gap-2">
               <Link
                 href="/tournaments"
-                className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                  pathname.startsWith('/tournaments')
-                    ? 'bg-[#8B5738] text-white shadow-sm font-semibold'
-                    : 'text-[#E4D5C0] hover:text-white hover:bg-[#4E3020]'
-                }`}
+                className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${pathname.startsWith('/tournaments')
+                  ? 'bg-[#8B5738] text-white shadow-sm font-semibold'
+                  : 'text-[#E4D5C0] hover:text-white hover:bg-[#4E3020]'
+                  }`}
               >
                 <Trophy className="w-4 h-4 text-[#C49A52]" />
                 Tournaments
@@ -59,11 +58,10 @@ export function Navbar() {
               {user.role === 'STUDENT' && (
                 <Link
                   href="/my-matches"
-                  className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                    pathname === '/my-matches'
-                      ? 'bg-[#8B5738] text-white shadow-sm font-semibold'
-                      : 'text-[#E4D5C0] hover:text-white hover:bg-[#4E3020]'
-                  }`}
+                  className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${pathname === '/my-matches'
+                    ? 'bg-[#8B5738] text-white shadow-sm font-semibold'
+                    : 'text-[#E4D5C0] hover:text-white hover:bg-[#4E3020]'
+                    }`}
                 >
                   <Swords className="w-4 h-4 text-[#C49A52]" />
                   My Match History
@@ -97,9 +95,9 @@ export function Navbar() {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Leave the Arena?</AlertDialogTitle>
+                  <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to log out of your session? You will be signed out and your authentication token will be removed.
+                    You'll be signed out of your Kingdom of Chess account. You can log back in anytime to continue your chess journey.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="mt-4 gap-2">

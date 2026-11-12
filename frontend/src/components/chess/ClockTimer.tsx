@@ -21,15 +21,23 @@ export function ClockTimer({
   whitePlayerName,
   blackPlayerName,
 }: ClockTimerProps) {
-  const [whiteMs, setWhiteMs] = useState(whiteTimeRemainingMs);
-  const [blackMs, setBlackMs] = useState(blackTimeRemainingMs);
+  const [whiteMs, setWhiteMs] = useState(
+    typeof whiteTimeRemainingMs === 'number' && !isNaN(whiteTimeRemainingMs) ? whiteTimeRemainingMs : 300000,
+  );
+  const [blackMs, setBlackMs] = useState(
+    typeof blackTimeRemainingMs === 'number' && !isNaN(blackTimeRemainingMs) ? blackTimeRemainingMs : 300000,
+  );
 
   useEffect(() => {
-    setWhiteMs(whiteTimeRemainingMs);
+    if (typeof whiteTimeRemainingMs === 'number' && !isNaN(whiteTimeRemainingMs)) {
+      setWhiteMs(whiteTimeRemainingMs);
+    }
   }, [whiteTimeRemainingMs]);
 
   useEffect(() => {
-    setBlackMs(blackTimeRemainingMs);
+    if (typeof blackTimeRemainingMs === 'number' && !isNaN(blackTimeRemainingMs)) {
+      setBlackMs(blackTimeRemainingMs);
+    }
   }, [blackTimeRemainingMs]);
 
   // Countdown timer loop

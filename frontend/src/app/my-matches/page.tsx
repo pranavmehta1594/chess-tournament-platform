@@ -2,10 +2,11 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../providers/auth-context';
 import { withAuth } from '../../components/auth/WithAuth';
 import { fetchApi } from '../../lib/api';
+import { getSocket } from '../../lib/socket';
 import { formatTime } from '../../lib/utils';
 import {
   Swords,
@@ -87,11 +88,33 @@ function BlackPawnAvatar() {
 function MyMatchesPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const { data: matches, isLoading, error } = useQuery<MatchItem[]>({
+  const { data: matches, isLoading, error, refetch } = useQuery<MatchItem[]>({
     queryKey: ['my-matches'],
     queryFn: () => fetchApi('/matches/my-history'),
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
+
+  // Listen for real-time match completion events to refresh list automatically
+  React.useEffect(() => {
+    const socket = getSocket();
+    const handleUpdate = () => {
+      queryClient.invalidateQueries({ queryKey: ['my-matches'] });
+      refetch();
+    };
+
+    socket.on('match:ended', handleUpdate);
+    socket.on('match:started', handleUpdate);
+    socket.on('leaderboard:updated', handleUpdate);
+
+    return () => {
+      socket.off('match:ended', handleUpdate);
+      socket.off('match:started', handleUpdate);
+      socket.off('leaderboard:updated', handleUpdate);
+    };
+  }, [queryClient, refetch]);
 
   return (
     <div

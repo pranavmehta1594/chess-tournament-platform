@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../providers/auth-context';
 import { withAuth } from '../../../components/auth/WithAuth';
 import { fetchApi } from '../../../lib/api';
@@ -31,6 +31,7 @@ function LiveMatchPage() {
   const params = useParams();
   const matchId = params?.id as string;
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
 
   // Match State
@@ -106,7 +107,11 @@ function LiveMatchPage() {
         setWinnerId(data.winnerId);
         if (data.finalFen) setFen(data.finalFen);
         if (data.pgn != null) setPgn(data.pgn);
+        if (typeof data.whiteTimeRemainingMs === 'number') setWhiteMs(data.whiteTimeRemainingMs);
+        if (typeof data.blackTimeRemainingMs === 'number') setBlackMs(data.blackTimeRemainingMs);
         setIsGameOverModalOpen(true);
+        queryClient.invalidateQueries({ queryKey: ['my-matches'] });
+        queryClient.invalidateQueries({ queryKey: ['match', matchId] });
       }
     };
 
@@ -140,8 +145,12 @@ function LiveMatchPage() {
     if (matchData) {
       if (matchData.finalFen) setFen(matchData.finalFen);
       if (matchData.pgn != null) setPgn(matchData.pgn);
-      if (matchData.whiteTimeRemainingMs != null) setWhiteMs(matchData.whiteTimeRemainingMs);
-      if (matchData.blackTimeRemainingMs != null) setBlackMs(matchData.blackTimeRemainingMs);
+      if (typeof matchData.whiteTimeRemainingMs === 'number' && !isNaN(matchData.whiteTimeRemainingMs)) {
+        setWhiteMs(matchData.whiteTimeRemainingMs);
+      }
+      if (typeof matchData.blackTimeRemainingMs === 'number' && !isNaN(matchData.blackTimeRemainingMs)) {
+        setBlackMs(matchData.blackTimeRemainingMs);
+      }
       if (matchData.status === 'COMPLETED') {
         setMatchStatus('COMPLETED');
         setResult(matchData.result);

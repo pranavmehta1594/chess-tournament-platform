@@ -58,6 +58,29 @@ export class MatchesService {
 
     const enriched = [];
     for (const m of userMatches) {
+      // Auto-finalize any stale match whose clock has elapsed
+      if (m.status === 'IN_PROGRESS') {
+        const totalMaxMs = (m.whiteTimeRemainingMs || 300000) + (m.blackTimeRemainingMs || 300000);
+        const elapsedSinceStart = Date.now() - new Date(m.startedAt).getTime();
+        if (elapsedSinceStart > totalMaxMs + 5000 || m.whiteTimeRemainingMs === 0 || m.blackTimeRemainingMs === 0) {
+          const result = m.whiteTimeRemainingMs === 0 ? 'BLACK_WIN' : 'WHITE_WIN';
+          await this.dbService.db
+            .update(schema.matches)
+            .set({
+              status: 'COMPLETED',
+              result,
+              terminationReason: 'TIMEOUT',
+              endedAt: new Date(),
+            })
+            .where(eq(schema.matches.id, m.id));
+
+          m.status = 'COMPLETED';
+          m.result = result;
+          m.terminationReason = 'TIMEOUT';
+          m.endedAt = new Date();
+        }
+      }
+
       const [whiteUser] = await this.dbService.db
         .select({ id: schema.users.id, name: schema.users.name, email: schema.users.email })
         .from(schema.users)
