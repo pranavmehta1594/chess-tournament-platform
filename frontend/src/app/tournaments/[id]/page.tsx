@@ -20,6 +20,17 @@ import {
   ArrowRight,
   ShieldAlert,
 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../../../components/ui/alert-dialog';
 
 interface LeaderboardEntry {
   userId: string;
@@ -504,13 +515,37 @@ function TournamentDetailPage() {
                     </button>
                   )}
                   {tournament.status === 'ONGOING' && (
-                    <button
-                      onClick={() => statusMutation.mutate('COMPLETED')}
-                      disabled={statusMutation.isPending}
-                      className="px-5 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
-                    >
-                      Complete Tournament
-                    </button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <button
+                          disabled={statusMutation.isPending}
+                          className="px-5 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer disabled:opacity-50"
+                        >
+                          {statusMutation.isPending ? 'Completing...' : 'Complete Tournament'}
+                        </button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="font-serif font-bold text-lg text-rose-800">
+                            Complete Tournament?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to end this tournament? All matchmaking will close, current standings will be locked, and the final leaderboard will be declared. This action cannot be reversed.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter className="mt-4 gap-2">
+                          <AlertDialogCancel className="rounded-xl border border-[#E4D5C0] text-[#261A13] hover:bg-[#F5EBDD] cursor-pointer">
+                            Keep Ongoing
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => statusMutation.mutate('COMPLETED')}
+                            className="rounded-xl bg-rose-700 hover:bg-rose-800 text-white shadow-sm cursor-pointer"
+                          >
+                            Confirm Completion
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   )}
                   {tournament.status === 'COMPLETED' && (
                     <span className="bg-[#C49A52]/20 text-[#E5B869] border border-[#C49A52]/40 text-xs font-bold px-4 py-2 rounded-xl">
