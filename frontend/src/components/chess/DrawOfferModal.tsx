@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Handshake } from 'lucide-react';
+import { Handshake, Loader2 } from 'lucide-react';
 
 interface DrawOfferModalProps {
   isOpen: boolean;
   fromUserName: string;
   onAccept: () => void;
   onDecline: () => void;
+  submitting?: 'accept' | 'decline' | null;
 }
 
 export function DrawOfferModal({
@@ -15,6 +16,7 @@ export function DrawOfferModal({
   fromUserName,
   onAccept,
   onDecline,
+  submitting = null,
 }: DrawOfferModalProps) {
   if (!isOpen) return null;
 
@@ -44,16 +46,32 @@ export function DrawOfferModal({
           <button
             type="button"
             onClick={onDecline}
-            className="w-full py-2.5 px-4 rounded-xl border border-[#E4D5C0] bg-white hover:bg-[#F5EBDD] text-[#261A13] font-semibold text-sm transition-all shadow-xs cursor-pointer active:scale-[0.99]"
+            disabled={submitting !== null}
+            className="w-full py-2.5 px-4 rounded-xl border border-[#E4D5C0] bg-white hover:bg-[#F5EBDD] text-[#261A13] font-semibold text-sm transition-all shadow-xs cursor-pointer active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Decline
+            {submitting === 'decline' ? (
+              <span className="inline-flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Declining...
+              </span>
+            ) : (
+              'Decline'
+            )}
           </button>
           <button
             type="button"
             onClick={onAccept}
-            className="w-full py-2.5 px-4 rounded-xl bg-[#3B2418] hover:bg-[#8B5738] text-white font-bold text-sm transition-all shadow-md cursor-pointer active:scale-[0.99]"
+            disabled={submitting !== null}
+            className="w-full py-2.5 px-4 rounded-xl bg-[#3B2418] hover:bg-[#8B5738] text-white font-bold text-sm transition-all shadow-md cursor-pointer active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Accept Draw
+            {submitting === 'accept' ? (
+              <span className="inline-flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Accepting...
+              </span>
+            ) : (
+              'Accept Draw'
+            )}
           </button>
         </div>
       </div>

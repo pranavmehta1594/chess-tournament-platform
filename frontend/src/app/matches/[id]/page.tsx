@@ -44,6 +44,7 @@ import {
   Copy,
   Check,
   User,
+  Loader2,
 } from 'lucide-react';
 import { Chess } from 'chess.js';
 
@@ -72,6 +73,11 @@ function LiveMatchPage() {
   const [isDrawSentDialogOpen, setIsDrawSentDialogOpen] = useState(false);
   const [isDrawDeclinedDialogOpen, setIsDrawDeclinedDialogOpen] = useState(false);
   const [moveErrorMessage, setMoveErrorMessage] = useState<string | null>(null);
+  const [isOfferDrawDialogOpen, setIsOfferDrawDialogOpen] = useState(false);
+  const [isResignDialogOpen, setIsResignDialogOpen] = useState(false);
+  const [isOfferingDraw, setIsOfferingDraw] = useState(false);
+  const [isResigning, setIsResigning] = useState(false);
+  const [drawResponse, setDrawResponse] = useState<'accept' | 'decline' | null>(null);
 
   // Left Sidebar Tabs
   const [leftTab, setLeftTab] = useState<'match' | 'pgn' | 'details'>('match');
@@ -149,6 +155,12 @@ function LiveMatchPage() {
 
     const handleGameEnded = (data: any) => {
       if (data.matchId === matchId) {
+        setIsOfferingDraw(false);
+        setIsResigning(false);
+        setDrawResponse(null);
+        setIsOfferDrawDialogOpen(false);
+        setIsResignDialogOpen(false);
+        setIsDrawOfferModalOpen(false);
         setMatchStatus('COMPLETED');
         setResult(data.result);
         setReason(data.reason);
@@ -307,29 +319,62 @@ function LiveMatchPage() {
   };
 
   const handleConfirmResign = () => {
+    if (isResigning) return;
+
+    setIsResigning(true);
     const socket = getSocket();
-    socket.emit('match:resign', { matchId });
+    socket.emit('match:resign', { matchId }, (res: any) => {
+      if (!res?.success) {
+        setIsResigning(false);
+        setMoveErrorMessage(res?.error || 'Unable to resign the match. Please try again.');
+      }
+    });
   };
 
   const handleConfirmOfferDraw = () => {
+    if (isOfferingDraw) return;
+
+    setIsOfferingDraw(true);
     const socket = getSocket();
     socket.emit('match:offer_draw', { matchId }, (res: any) => {
       if (res?.success) {
+        setIsOfferingDraw(false);
+        setIsOfferDrawDialogOpen(false);
         setIsDrawSentDialogOpen(true);
+      } else {
+        setIsOfferingDraw(false);
+        setMoveErrorMessage(res?.error || 'Unable to send the draw offer. Please try again.');
       }
     });
   };
 
   const handleAcceptDraw = () => {
+    if (drawResponse) return;
+
+    setDrawResponse('accept');
     const socket = getSocket();
-    socket.emit('match:respond_draw', { matchId, accept: true });
-    setIsDrawOfferModalOpen(false);
+    socket.emit('match:respond_draw', { matchId, accept: true }, (res: any) => {
+      if (!res?.success) {
+        setDrawResponse(null);
+        setMoveErrorMessage(res?.error || 'Unable to accept the draw. Please try again.');
+      }
+    });
   };
 
   const handleDeclineDraw = () => {
+    if (drawResponse) return;
+
+    setDrawResponse('decline');
     const socket = getSocket();
-    socket.emit('match:respond_draw', { matchId, accept: false });
-    setIsDrawOfferModalOpen(false);
+    socket.emit('match:respond_draw', { matchId, accept: false }, (res: any) => {
+      if (res?.success) {
+        setDrawResponse(null);
+        setIsDrawOfferModalOpen(false);
+      } else {
+        setDrawResponse(null);
+        setMoveErrorMessage(res?.error || 'Unable to decline the draw. Please try again.');
+      }
+    });
   };
 
   const handleReturnToTournament = () => {
@@ -645,7 +690,7 @@ function LiveMatchPage() {
                     }`}
                   >
                     <Clock className="w-3.5 h-3.5 text-[#C49A52]" />
-                    <span>{formatTime(Math.ceil(blackMs / 1000))}</span>
+                    <span>{formatTime(blackMs)}</span>
                   </div>
                 </div>
               </div>
@@ -711,7 +756,7 @@ function LiveMatchPage() {
                     }`}
                   >
                     <Clock className="w-3.5 h-3.5 text-[#C49A52]" />
-                    <span>{formatTime(Math.ceil(whiteMs / 1000))}</span>
+                    <span>{formatTime(whiteMs)}</span>
                   </div>
                 </div>
               </div>
@@ -720,10 +765,16 @@ function LiveMatchPage() {
               {!isSpectator && matchStatus === 'IN_PROGRESS' && (
                 <div className="grid grid-cols-2 gap-2 pt-2">
                   {/* Offer Draw Alert Dialog */}
-                  <AlertDialog>
+                  <AlertDialog
+                    open={isOfferDrawDialogOpen}
+                    onOpenChange={(open) => {
+                      if (!isOfferingDraw) setIsOfferDrawDialogOpen(open);
+                    }}
+                  >
                     <AlertDialogTrigger asChild>
                       <button
                         type="button"
+                        disabled={isOfferingDraw || isResigning}
                         className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-semibold text-white/90 hover:text-white transition-colors cursor-pointer"
                       >
                         <Handshake className="w-3.5 h-3.5 text-[#E5B869]" />
@@ -744,20 +795,37 @@ function LiveMatchPage() {
                           Cancel
                         </AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={handleConfirmOfferDraw}
+                          disabled={isOfferingDraw}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            handleConfirmOfferDraw();
+                          }}
                           className="rounded-xl bg-[#3B2418] hover:bg-[#8B5738] text-white shadow-sm cursor-pointer"
                         >
-                          Send Draw Offer
+                          {isOfferingDraw ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Sending Draw Offer...
+                            </>
+                          ) : (
+                            'Send Draw Offer'
+                          )}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
 
                   {/* Resign Match Alert Dialog */}
-                  <AlertDialog>
+                  <AlertDialog
+                    open={isResignDialogOpen}
+                    onOpenChange={(open) => {
+                      if (!isResigning) setIsResignDialogOpen(open);
+                    }}
+                  >
                     <AlertDialogTrigger asChild>
                       <button
                         type="button"
+                        disabled={isResigning || isOfferingDraw}
                         className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/40 text-xs font-semibold text-rose-300 hover:text-white transition-colors cursor-pointer"
                       >
                         <Flag className="w-3.5 h-3.5 text-rose-400" />
@@ -778,10 +846,21 @@ function LiveMatchPage() {
                           Keep Playing
                         </AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={handleConfirmResign}
+                          disabled={isResigning}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            handleConfirmResign();
+                          }}
                           className="rounded-xl bg-rose-700 hover:bg-rose-800 text-white shadow-sm cursor-pointer"
                         >
-                          Confirm Resignation
+                          {isResigning ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Resigning...
+                            </>
+                          ) : (
+                            'Confirm Resignation'
+                          )}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
@@ -954,6 +1033,7 @@ function LiveMatchPage() {
         fromUserName={drawOfferFromUser}
         onAccept={handleAcceptDraw}
         onDecline={handleDeclineDraw}
+        submitting={drawResponse}
       />
     </div>
   );

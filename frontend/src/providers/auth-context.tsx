@@ -30,12 +30,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  const refreshUser = async () => {
+  const refreshUser = async (tokenOverride?: string | null) => {
+    const sessionToken =
+      tokenOverride ??
+      (typeof window !== 'undefined' ? localStorage.getItem('chess_token') : null);
+
+    // A public page does not need to call /auth/me when there is no saved
+    // session. This prevents the login screen from waiting on a cold or
+    // unavailable backend before it can render.
+    if (!sessionToken) {
+      setUser(null);
+      disconnectSocket();
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { data } = await https.get<User>(ENDPOINTS.auth.me);
       setUser(data);
+      setToken(sessionToken);
       // Connect socket with session
-      const socket = getSocket(token || undefined);
+      const socket = getSocket(sessionToken);
       if (!socket.connected) {
         socket.connect();
       }
@@ -50,10 +65,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check saved token in localStorage if available
     const savedToken = typeof window !== 'undefined' ? localStorage.getItem('chess_token') : null;
-    if (savedToken) {
-      setToken(savedToken);
-    }
-    refreshUser();
+    setToken(savedToken);
+    void refreshUser(savedToken);
   }, []);
 
   const login = async (email: string, pass: string): Promise<User> => {
