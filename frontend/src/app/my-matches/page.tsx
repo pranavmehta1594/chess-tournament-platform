@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../providers/auth-context';
 import { withAuth } from '../../components/auth/WithAuth';
-import { fetchApi } from '../../lib/api';
+import { https } from '../../services/https';
+import { ENDPOINTS } from '../../services/endpoints';
 import { getSocket } from '../../lib/socket';
 import { formatTime } from '../../lib/utils';
 import {
@@ -92,7 +93,7 @@ function MyMatchesPage() {
 
   const { data: matches, isLoading, error, refetch } = useQuery<MatchItem[]>({
     queryKey: ['my-matches'],
-    queryFn: () => fetchApi('/matches/my-history'),
+    queryFn: () => https.get<MatchItem[]>(ENDPOINTS.matches.history).then((response) => response.data),
     staleTime: 0,
     refetchOnMount: 'always',
   });

@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchApi } from '../lib/api';
+import { https } from '../services/https';
+import { ENDPOINTS } from '../services/endpoints';
 import { getSocket, disconnectSocket } from '../lib/socket';
 
 export interface User {
@@ -31,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUser = async () => {
     try {
-      const data = await fetchApi<User>('/auth/me');
+      const { data } = await https.get<User>(ENDPOINTS.auth.me);
       setUser(data);
       // Connect socket with session
       const socket = getSocket(token || undefined);
@@ -58,10 +59,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, pass: string): Promise<User> => {
     setIsLoading(true);
     try {
-      const result = await fetchApi<{ user: User; token: string }>('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password: pass }),
-      });
+      const { data: result } = await https.post<{ user: User; token: string }>(
+        ENDPOINTS.auth.login,
+        { email, password: pass },
+      );
 
       setUser(result.user);
       setToken(result.token);
@@ -81,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetchApi('/auth/logout', { method: 'POST' });
+      await https.post(ENDPOINTS.auth.logout);
     } catch {
       // Ignore logout errors
     } finally {

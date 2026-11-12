@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../providers/auth-context';
 import { withAuth } from '../../../components/auth/WithAuth';
-import { fetchApi } from '../../../lib/api';
+import { https } from '../../../services/https';
+import { ENDPOINTS } from '../../../services/endpoints';
 import { getSocket } from '../../../lib/socket';
 import { formatTime } from '../../../lib/utils';
 import { ChessBoardView } from '../../../components/chess/ChessBoardView';
@@ -87,7 +88,8 @@ function LiveMatchPage() {
   // Fetch match details via REST
   const { data: matchData, isLoading } = useQuery({
     queryKey: ['match', matchId],
-    queryFn: () => fetchApi(`/matches/${matchId}`),
+    queryFn: () =>
+      https.get(ENDPOINTS.matches.byId(matchId)).then((response) => response.data),
     enabled: !!matchId,
     refetchOnMount: 'always',
   });

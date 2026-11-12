@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../providers/auth-context';
 import { withAuth } from '../../../components/auth/WithAuth';
-import { fetchApi } from '../../../lib/api';
+import { https } from '../../../services/https';
+import { ENDPOINTS } from '../../../services/endpoints';
 import { getSocket } from '../../../lib/socket';
 import { formatDate } from '../../../lib/utils';
 import {
@@ -256,7 +257,8 @@ function TournamentDetailPage() {
   // Fetch tournament details
   const { data: tournament, isLoading: isTournamentLoading, error } = useQuery({
     queryKey: ['tournament', id],
-    queryFn: () => fetchApi(`/tournaments/${id}`),
+    queryFn: () =>
+      https.get(ENDPOINTS.tournaments.byId(id)).then((response) => response.data),
     enabled: !!id,
     refetchOnMount: 'always',
   });
@@ -264,7 +266,8 @@ function TournamentDetailPage() {
   // Fetch leaderboard
   const { data: leaderboard, isLoading: isLeaderboardLoading } = useQuery<LeaderboardEntry[]>({
     queryKey: ['tournament-leaderboard', id],
-    queryFn: () => fetchApi(`/tournaments/${id}/leaderboard`),
+    queryFn: () =>
+      https.get(ENDPOINTS.tournaments.leaderboard(id)).then((response) => response.data),
     enabled: !!id,
     refetchOnMount: 'always',
   });
@@ -272,7 +275,8 @@ function TournamentDetailPage() {
   // Fetch matches
   const { data: matches, isLoading: isMatchesLoading } = useQuery<MatchItem[]>({
     queryKey: ['tournament-matches', id],
-    queryFn: () => fetchApi(`/tournaments/${id}/matches`),
+    queryFn: () =>
+      https.get(ENDPOINTS.tournaments.matches(id)).then((response) => response.data),
     enabled: !!id,
     refetchOnMount: 'always',
   });
@@ -285,9 +289,7 @@ function TournamentDetailPage() {
   // Join tournament mutation
   const joinMutation = useMutation({
     mutationFn: () =>
-      fetchApi(`/tournaments/${id}/join`, {
-        method: 'POST',
-      }),
+      https.post(ENDPOINTS.tournaments.join(id)).then((response) => response.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tournament', id] });
       queryClient.invalidateQueries({ queryKey: ['tournament-leaderboard', id] });
@@ -297,10 +299,9 @@ function TournamentDetailPage() {
   // Status update mutation (Coach)
   const statusMutation = useMutation({
     mutationFn: (newStatus: string) =>
-      fetchApi(`/tournaments/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status: newStatus }),
-      }),
+      https
+        .patch(ENDPOINTS.tournaments.byId(id), { status: newStatus })
+        .then((response) => response.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tournament', id] });
       queryClient.invalidateQueries({ queryKey: ['tournaments'] });

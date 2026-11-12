@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../providers/auth-context';
 import { withAuth } from '../../components/auth/WithAuth';
-import { fetchApi } from '../../lib/api';
+import { https } from '../../services/https';
+import { ENDPOINTS } from '../../services/endpoints';
 import { formatDate } from '../../lib/utils';
 import {
   Plus,
@@ -100,15 +101,12 @@ function TournamentsPage() {
 
   const { data: tournaments, isLoading, error } = useQuery<Tournament[]>({
     queryKey: ['tournaments'],
-    queryFn: () => fetchApi('/tournaments'),
+    queryFn: () => https.get<Tournament[]>(ENDPOINTS.tournaments.all).then((response) => response.data),
   });
 
   const createMutation = useMutation({
     mutationFn: (newTourney: any) =>
-      fetchApi('/tournaments', {
-        method: 'POST',
-        body: JSON.stringify(newTourney),
-      }),
+      https.post(ENDPOINTS.tournaments.all, newTourney).then((response) => response.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tournaments'] });
       setIsModalOpen(false);
