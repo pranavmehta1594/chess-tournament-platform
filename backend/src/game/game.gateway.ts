@@ -133,6 +133,9 @@ export class GameGateway
   ) {
     const user = client.data.user;
     if (!user) return { success: false, error: 'Unauthorized' };
+    if (user.role !== 'STUDENT') {
+      return { success: false, error: 'Only students can enter the matchmaking queue' };
+    }
 
     try {
       const result = await this.matchmakingService.enqueuePlayer(

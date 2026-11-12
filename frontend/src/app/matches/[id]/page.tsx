@@ -341,6 +341,15 @@ function LiveMatchPage() {
     }
   };
 
+  const handleRequeue = () => {
+    setIsGameOverModalOpen(false);
+    if (matchData?.tournamentId) {
+      router.push(`/tournaments/${matchData.tournamentId}?action=find-opponent`);
+    } else {
+      router.push('/tournaments');
+    }
+  };
+
   const handleCopyPgn = () => {
     navigator.clipboard.writeText(pgn || 'No moves played yet.');
     setCopiedPgn(true);
@@ -865,7 +874,7 @@ function LiveMatchPage() {
         currentUserId={user?.id}
         whitePlayerName={whitePlayerName}
         blackPlayerName={blackPlayerName}
-        onRequeue={handleReturnToTournament}
+        onRequeue={handleRequeue}
         onReturnToTournament={handleReturnToTournament}
         isSpectator={isSpectator}
       />

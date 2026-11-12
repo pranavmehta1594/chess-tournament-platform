@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../providers/auth-context';
 import { withAuth } from '../../../components/auth/WithAuth';
@@ -47,9 +47,10 @@ interface LeaderboardEntry {
 
 interface MatchItem {
   id: string;
-  whitePlayer: { name: string };
-  blackPlayer: { name: string };
+  whitePlayer: { id?: string; name: string };
+  blackPlayer: { id?: string; name: string };
   status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'ABORTED';
+  result?: 'WHITE_WIN' | 'BLACK_WIN' | 'DRAW' | 'ONGOING';
   terminationReason?: string;
   startedAt: string;
 }
@@ -247,6 +248,7 @@ function TournamentDetailPage() {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -364,11 +366,21 @@ function TournamentDetailPage() {
     socket.emit('queue:leave', { tournamentId: id });
   };
 
+  // Auto-trigger matchmaking if player arrives via Re-Queue after a match
+  useEffect(() => {
+    if (
+      searchParams?.get('action') === 'find-opponent' &&
+      isEnrolled &&
+      !isSearching &&
+      tournament?.status !== 'COMPLETED'
+    ) {
+      handleStartSearching();
+    }
+  }, [searchParams, isEnrolled, tournament?.status]);
+
   const formatScheduledDate = (dateStr?: string) => {
     if (!dateStr) return '';
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return '';
-    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    return formatDate(dateStr);
   };
 
   if (isTournamentLoading || !tournament) {
@@ -440,6 +452,16 @@ function TournamentDetailPage() {
                 </h1>
                 <RightLaurelBranch />
               </div>
+
+              {/* Declared Winner Banner on Completion */}
+              {tournament.status === 'COMPLETED' && (
+                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-[#FDF3DE]/15 border border-[#C49A52]/60 text-white shadow-md">
+                  <Trophy className="w-5 h-5 text-[#E5B869] shrink-0" />
+                  <span className="text-xs sm:text-sm font-semibold">
+                    Declared Champion: <span className="text-[#E5B869] font-bold">{tournament.winnerName || leaderboard?.[0]?.name || 'TBD'}</span> 🏆
+                  </span>
+                </div>
+              )}
 
               {/* Row 3: Enrolled Players & Scheduled Date */}
               <div className="flex flex-wrap items-center gap-5 text-xs sm:text-sm text-white/80 font-medium">
@@ -742,50 +764,75 @@ function TournamentDetailPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {matches.map((m) => (
-                  <div
-                    key={m.id}
-                    className="p-5 rounded-2xl bg-[#FFF9EF] border border-[#E4D5C0] shadow-sm hover:shadow-md transition-all flex items-center justify-between gap-4"
-                  >
-                    <div className="space-y-2 flex-1 min-w-0">
-                      <div className="flex items-center gap-2 text-xs">
-                        {m.status === 'IN_PROGRESS' ? (
-                          <span className="bg-[#3B2418] text-[#C49A52] text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#C49A52] animate-pulse" />
-                            LIVE
-                          </span>
-                        ) : (
-                          <span className="bg-emerald-900/90 text-emerald-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
-                            Completed
-                          </span>
-                        )}
-                        {m.terminationReason && (
-                          <span className="text-[11px] text-[var(--muted)] font-medium capitalize">
-                            • {m.terminationReason.toLowerCase()}
-                          </span>
-                        )}
-                      </div>
+                {matches.map((m) => {
+                  const isWhiteWinner = m.result === 'WHITE_WIN';
+                  const isBlackWinner = m.result === 'BLACK_WIN';
+                  const isDraw = m.result === 'DRAW';
 
-                      <div className="font-bold text-sm text-[var(--foreground)] flex items-center gap-2">
-                        <span>{m.whitePlayer?.name || 'White'}</span>
-                        <span className="text-xs text-[var(--muted)] font-normal">vs</span>
-                        <span>{m.blackPlayer?.name || 'Black'}</span>
-                      </div>
+                  const resultScore = isWhiteWinner ? '1 - 0' : isBlackWinner ? '0 - 1' : isDraw ? '½ - ½' : '';
+                  const resultText = isWhiteWinner
+                    ? `${m.whitePlayer?.name || 'White'} won`
+                    : isBlackWinner
+                    ? `${m.blackPlayer?.name || 'Black'} won`
+                    : isDraw
+                    ? 'Drawn'
+                    : '';
 
-                      <div className="text-xs text-[var(--muted)]">
-                        {formatDate(m.startedAt)}
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => router.push(`/matches/${m.id}`)}
-                      className="px-4 py-2 rounded-xl bg-[#3B2418] hover:bg-[#8B5738] text-white text-xs font-semibold flex items-center gap-1.5 shrink-0 transition-colors shadow-xs"
+                  return (
+                    <div
+                      key={m.id}
+                      className="p-5 rounded-2xl bg-[#FFF9EF] border border-[#E4D5C0] shadow-sm hover:shadow-md transition-all flex items-center justify-between gap-4"
                     >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>View</span>
-                    </button>
-                  </div>
-                ))}
+                      <div className="space-y-2 flex-1 min-w-0">
+                        <div className="flex items-center gap-2 text-xs">
+                          {m.status === 'IN_PROGRESS' ? (
+                            <span className="bg-[#3B2418] text-[#C49A52] text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#C49A52] animate-pulse" />
+                              LIVE
+                            </span>
+                          ) : (
+                            <span className="bg-emerald-900/90 text-emerald-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                              <span>Completed</span>
+                              {resultScore && (
+                                <span className="font-mono text-amber-300 font-extrabold">({resultScore})</span>
+                              )}
+                            </span>
+                          )}
+                          {m.terminationReason && (
+                            <span className="text-[11px] text-[var(--muted)] font-medium capitalize">
+                              • {m.terminationReason.toLowerCase()}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="font-bold text-sm text-[var(--foreground)] flex items-center gap-2">
+                          <span className={isWhiteWinner ? 'text-[#8B5738] font-extrabold underline decoration-[#C49A52]' : ''}>
+                            {m.whitePlayer?.name || 'White'}
+                          </span>
+                          <span className="text-xs text-[var(--muted)] font-normal">vs</span>
+                          <span className={isBlackWinner ? 'text-[#8B5738] font-extrabold underline decoration-[#C49A52]' : ''}>
+                            {m.blackPlayer?.name || 'Black'}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-3 text-xs text-[var(--muted)]">
+                          <span>{formatDate(m.startedAt)}</span>
+                          {m.status === 'COMPLETED' && resultText && (
+                            <span className="text-emerald-700 font-semibold">• {resultText}</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => router.push(`/matches/${m.id}`)}
+                        className="px-4 py-2 rounded-xl bg-[#3B2418] hover:bg-[#8B5738] text-white text-xs font-semibold flex items-center gap-1.5 shrink-0 transition-colors shadow-xs cursor-pointer"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>View</span>
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

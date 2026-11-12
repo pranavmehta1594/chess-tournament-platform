@@ -76,6 +76,8 @@ export class TournamentsService {
   }
 
   async findOne(id: string) {
+    const winnerUser = alias(schema.users, 'tournament_winner_user');
+
     const [tournament] = await this.dbService.db
       .select({
         id: schema.tournaments.id,
@@ -84,9 +86,12 @@ export class TournamentsService {
         startDateTime: schema.tournaments.startDateTime,
         status: schema.tournaments.status,
         creatorName: schema.users.name,
+        winnerId: schema.tournaments.winnerId,
+        winnerName: winnerUser.name,
       })
       .from(schema.tournaments)
       .leftJoin(schema.users, eq(schema.tournaments.createdBy, schema.users.id))
+      .leftJoin(winnerUser, eq(schema.tournaments.winnerId, winnerUser.id))
       .where(eq(schema.tournaments.id, id))
       .limit(1);
 
@@ -247,12 +252,15 @@ export class TournamentsService {
       .select({
         id: schema.matches.id,
         status: schema.matches.status,
+        result: schema.matches.result,
         terminationReason: schema.matches.terminationReason,
         startedAt: schema.matches.startedAt,
         whitePlayer: {
+          id: schema.matches.whitePlayerId,
           name: whitePlayer.name,
         },
         blackPlayer: {
+          id: schema.matches.blackPlayerId,
           name: blackPlayer.name,
         },
       })
