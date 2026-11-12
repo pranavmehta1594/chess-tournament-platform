@@ -49,24 +49,21 @@ The database seed populates 1 Coach and 4 Students:
 - **Database**: A PostgreSQL instance (e.g. [Neon](https://neon.tech) free tier, or local PostgreSQL via Docker)
 
 ### 2. Environment Configuration
-The backend template is `backend/.env.example`. The root `.env.example` contains
-both backend and frontend variables for reference; there is currently no
-`frontend/.env.example` file.
+The backend and frontend each have their own template: `backend/.env.example`
+and `frontend/.env.example`. The root `.env.example` contains both sets of
+variables for reference.
 
 ```bash
 # Run from the repository root
 cp backend/.env.example backend/.env
-
-# Create frontend/.env.local with:
-NEXT_PUBLIC_API_URL=http://localhost:3001
-NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
+cp frontend/.env.example frontend/.env
 ```
 
 PowerShell equivalent:
 
 ```powershell
 Copy-Item backend/.env.example backend/.env
-Set-Content frontend/.env.local "NEXT_PUBLIC_API_URL=http://localhost:3001`nNEXT_PUBLIC_SOCKET_URL=http://localhost:3001"
+Copy-Item frontend/.env.example frontend/.env
 ```
 
 Configure your `DATABASE_URL` in `backend/.env`:

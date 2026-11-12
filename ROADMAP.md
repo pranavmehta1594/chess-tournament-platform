@@ -73,7 +73,7 @@ docker-compose.yml                PostgreSQL 16, backend, and frontend
 - [ ] Add an explicit Compose migration/seed job; the current containers start the applications but do not automatically run `db:migrate` or `db:seed`.
 - [x] Root and backend environment templates.
 - [x] README quick-start, local two-browser flow, architecture notes, and API reference.
-- [ ] Add a dedicated `frontend/.env.example` so both applications have local templates.
+- [x] Dedicated `backend/.env.example` and `frontend/.env.example` templates.
 - [ ] Add a root command or workspace script to install, build, and test both applications consistently.
 
 ## Phase 1 — Data model and authentication
