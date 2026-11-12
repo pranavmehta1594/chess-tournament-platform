@@ -250,17 +250,6 @@ export default function LoginPage() {
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-
-            {/* Forgot Password link */}
-            <div className="text-right mt-1.5">
-              <button
-                type="button"
-                onClick={() => alert('Please contact your tournament coach or admin to reset your password.')}
-                className="text-[11px] font-semibold text-[#8B5738] hover:text-[#3B2418] transition-colors"
-              >
-                Forgot Password?
-              </button>
-            </div>
           </div>
 
           {/* Log In Button */}
@@ -276,24 +265,6 @@ export default function LoginPage() {
             )}
           </button>
         </form>
-
-        {/* Footer Link */}
-        <div className="text-center mt-3.5">
-          <p className="text-[11px] text-[#887765]">
-            Don’t have an account?{' '}
-            <button
-              type="button"
-              onClick={() => {
-                setIdentifier('tradercompany@gmail.com');
-                setPassword('Password123!');
-              }}
-              className="font-semibold text-[#8B5738] hover:text-[#3B2418] transition-colors"
-            >
-              Sign Up
-            </button>
-          </p>
-        </div>
-
         {/* Assessment Quick-Access Drawer for Evaluators */}
         <div className="mt-3.5 pt-3 border-t border-[#E4D5C0]/60">
           <button
@@ -327,11 +298,10 @@ export default function LoginPage() {
                     </span>
                   </div>
                   <span
-                    className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase shrink-0 ${
-                      u.role === 'COACH'
-                        ? 'bg-[#C49A52]/20 text-[#8B5738] border border-[#C49A52]/40'
-                        : 'bg-[#3B2418]/10 text-[#3B2418] border border-[#3B2418]/20'
-                    }`}
+                    className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase shrink-0 ${u.role === 'COACH'
+                      ? 'bg-[#C49A52]/20 text-[#8B5738] border border-[#C49A52]/40'
+                      : 'bg-[#3B2418]/10 text-[#3B2418] border border-[#3B2418]/20'
+                      }`}
                   >
                     {u.role === 'COACH' ? 'Coach' : 'Student'}
                   </span>

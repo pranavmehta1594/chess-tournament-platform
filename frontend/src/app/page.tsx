@@ -19,10 +19,10 @@ export default function RootPage() {
   }, [user, isLoading, router]);
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+    <div className="min-h-screen bg-[#F5EBDD] flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
-        <span className="text-sm font-semibold text-slate-400">Loading Kingdom of Chess...</span>
+        <div className="w-12 h-12 border-4 border-[#C49A52] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-semibold text-[#887765]">Loading Kingdom of Chess...</span>
       </div>
     </div>
   );

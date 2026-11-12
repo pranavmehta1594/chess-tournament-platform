@@ -27,7 +27,7 @@ export default function RootLayout({
             <main className="flex-1">
               <Suspense
                 fallback={
-                  <div className="min-h-screen flex items-center justify-center">
+                  <div className="min-h-screen bg-[#F5EBDD] flex items-center justify-center">
                     <div className="w-10 h-10 border-4 border-[#C49A52] border-t-transparent rounded-full animate-spin" />
                   </div>
                 }
