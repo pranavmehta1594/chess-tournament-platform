@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Button } from '../ui/Button';
 import { Handshake } from 'lucide-react';
 
 interface DrawOfferModalProps {
@@ -20,29 +19,44 @@ export function DrawOfferModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center space-y-5">
-        <div className="w-12 h-12 rounded-full bg-amber-950/50 border border-amber-600/40 text-amber-400 mx-auto flex items-center justify-center">
-          <Handshake className="w-6 h-6" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="bg-[#FFF9EF] border border-[#E4D5C0] rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center space-y-5 animate-in zoom-in-95 duration-200 text-[#261A13]">
+        {/* Top Icon Badge */}
+        <div className="w-14 h-14 rounded-full bg-[#F5EBDD] border-2 border-[#C49A52]/50 text-[#C49A52] mx-auto flex items-center justify-center shadow-xs">
+          <Handshake className="w-7 h-7" />
         </div>
 
-        <div>
-          <h3 className="text-lg font-bold text-white">Draw Offer</h3>
-          <p className="text-sm text-slate-300 mt-1">
-            <span className="font-semibold text-amber-400">{fromUserName}</span> has offered a draw.
+        {/* Text Details */}
+        <div className="space-y-1.5">
+          <h3 className="font-serif font-bold text-xl text-[#3B2418]">
+            Draw Offer
+          </h3>
+          <p className="text-sm text-[#887765]">
+            <span className="font-bold text-[#261A13]">{fromUserName}</span> has offered a draw.
+          </p>
+          <p className="text-xs text-[#887765]/80">
+            Accepting will conclude the game immediately as a tie (0.5 points each).
           </p>
         </div>
 
+        {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-3 pt-2">
-          <Button variant="outline" onClick={onDecline}>
+          <button
+            type="button"
+            onClick={onDecline}
+            className="w-full py-2.5 px-4 rounded-xl border border-[#E4D5C0] bg-white hover:bg-[#F5EBDD] text-[#261A13] font-semibold text-sm transition-all shadow-xs cursor-pointer active:scale-[0.99]"
+          >
             Decline
-          </Button>
-          <Button variant="primary" onClick={onAccept}>
+          </button>
+          <button
+            type="button"
+            onClick={onAccept}
+            className="w-full py-2.5 px-4 rounded-xl bg-[#3B2418] hover:bg-[#8B5738] text-white font-bold text-sm transition-all shadow-md cursor-pointer active:scale-[0.99]"
+          >
             Accept Draw
-          </Button>
+          </button>
         </div>
       </div>
     </div>
   );
 }
-
