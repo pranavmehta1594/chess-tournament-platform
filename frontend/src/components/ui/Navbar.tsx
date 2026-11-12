@@ -5,6 +5,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../providers/auth-context';
 import { Trophy, Swords, User, LogOut } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './alert-dialog';
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -73,14 +84,37 @@ export function Navbar() {
               </span>
             </div>
 
-            {/* Sign out button */}
-            <button
-              onClick={logout}
-              title="Sign out"
-              className="p-1.5 rounded-lg text-[#E4D5C0] hover:text-[#C49A52] hover:bg-[#4E3020] transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            {/* Sign out button with confirmation AlertDialog */}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  type="button"
+                  title="Sign out"
+                  className="p-1.5 rounded-lg text-[#E4D5C0] hover:text-[#C49A52] hover:bg-[#4E3020] transition-colors cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Leave the Arena?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to log out of your session? You will be signed out and your authentication token will be removed.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="mt-4 gap-2">
+                  <AlertDialogCancel className="rounded-xl border border-[#E4D5C0] text-[#261A13] hover:bg-[#F5EBDD] cursor-pointer">
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={logout}
+                    className="rounded-xl bg-[#3B2418] hover:bg-rose-700 text-white shadow-sm cursor-pointer"
+                  >
+                    Confirm Log Out
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </div>
