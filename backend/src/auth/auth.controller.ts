@@ -8,7 +8,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import type { Response } from 'express';
+import type { CookieOptions, Response } from 'express';
 import { AuthService } from './auth.service.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
@@ -18,6 +18,14 @@ import type { AuthenticatedUser } from '../common/decorators/current-user.decora
 
 @Controller('auth')
 export class AuthController {
+  private readonly authCookieOptions: CookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    path: '/',
+  };
+
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
@@ -28,13 +36,7 @@ export class AuthController {
   ) {
     const { user, token } = await this.authService.login(loginDto);
 
-    response.cookie('access_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/',
-    });
+    response.cookie('access_token', token, this.authCookieOptions);
 
     return { user, token };
   }
@@ -47,13 +49,7 @@ export class AuthController {
   ) {
     const { user, token } = await this.authService.register(registerDto);
 
-    response.cookie('access_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/',
-    });
+    response.cookie('access_token', token, this.authCookieOptions);
 
     return { user, token };
   }
@@ -61,7 +57,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Res({ passthrough: true }) response: Response) {
-    response.clearCookie('access_token', { path: '/' });
+    response.clearCookie('access_token', this.authCookieOptions);
     return { message: 'Logged out successfully' };
   }
 
