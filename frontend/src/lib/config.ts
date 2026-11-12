@@ -1,4 +1,6 @@
-const LIVE_API_URL = process.env.NEXT_LIVE_API_URL;
+const LIVE_API_URL =
+  process.env.NEXT_PUBLIC_LIVE_API_URL ||
+  'https://kingdom-of-chess-api-kopw.onrender.com';
 
 const environment = process.env.NEXT_PUBLIC_ENVIRONMENT || 'development';
 
