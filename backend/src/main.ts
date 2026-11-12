@@ -39,6 +39,14 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
 
+  // Public service health endpoint for Render and uptime checks.
+  app.getHttpAdapter().get('/', (_request, response) => {
+    response.status(200).json({
+      status: 'ok',
+      service: 'kingdom-of-chess-api',
+    });
+  });
+
   const port = process.env.PORT || 3001;
   await app.listen(port, '0.0.0.0');
   console.log(`Kingdom of Chess Backend running on http://localhost:${port}/api/v1`);
