@@ -84,6 +84,24 @@ NEXT_PUBLIC_LIVE_API_URL=
 
 Never commit either `.env` file. They contain secrets and database credentials.
 
+## If you are sharing the project
+
+The private `.env` files do not need to be shared with another developer or
+reviewer. Share the repository, `.env.example` files, and this guide instead.
+The reviewer can create local environment files using the examples above.
+
+If they do not have PostgreSQL installed, Docker can provide the local
+database and services:
+
+```bash
+docker compose up --build -d
+docker compose exec backend node dist/db/migrate.js
+docker compose exec backend node dist/db/seed.js
+```
+
+Then open [http://localhost:3000](http://localhost:3000). The Docker database
+is local demo data and is separate from any hosted production database.
+
 ## 4. Prepare the database
 
 Run migrations from the backend directory:
