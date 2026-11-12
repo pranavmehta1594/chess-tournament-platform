@@ -13,8 +13,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard.js';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret:
-          configService.get<string>('JWT_SECRET') ||
-          'super_secret_jwt_key_kingdom_of_chess_2026',
+          configService.get<string>('JWT_SECRET'),
         signOptions: { expiresIn: '7d' },
       }),
     }),
@@ -23,5 +22,5 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard.js';
   providers: [AuthService, JwtAuthGuard],
   exports: [AuthService, JwtAuthGuard, JwtModule],
 })
-export class AuthModule {}
+export class AuthModule { }
 

@@ -19,7 +19,7 @@ export class AuthService {
     private readonly dbService: DbService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   async validateUser(email: string, pass: string): Promise<AuthenticatedUser> {
     const [user] = await this.dbService.db

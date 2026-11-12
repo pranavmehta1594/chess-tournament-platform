@@ -31,7 +31,7 @@ services:
       PORT: 3001
       NODE_ENV: development
       DATABASE_URL: postgresql://postgres:postgrespassword@postgres:5432/chess_db
-      JWT_SECRET: super_secret_jwt_key_kingdom_of_chess_2026
+      JWT_SECRET: 5fd8e7dc508388b0985e809965255ce9195a0da6c678527258d55bf1ead5bc27e502e8e532c8d0360a3e30c83273597635c1403e75198df5dc45a40b6c3a7703
       JWT_EXPIRES_IN: 7d
       FRONTEND_URL: http://localhost:3000
     depends_on:
