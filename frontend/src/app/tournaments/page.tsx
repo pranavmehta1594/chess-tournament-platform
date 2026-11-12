@@ -22,13 +22,9 @@ interface Tournament {
   id: string;
   name: string;
   timeControl: string;
-  initialTimeSeconds: number;
-  incrementSeconds: number;
   startDateTime: string;
   status: 'DRAFT' | 'OPEN' | 'ONGOING' | 'COMPLETED';
   participantCount: number;
-  creatorName?: string;
-  createdAt: string;
 }
 
 function TrophyHeaderIcon() {

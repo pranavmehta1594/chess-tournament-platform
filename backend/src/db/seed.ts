@@ -24,7 +24,6 @@ async function runSeed() {
   const db = drizzle(sql, { schema });
 
   console.log('Clearing existing data...');
-  await db.delete(schema.matchMoves);
   await db.delete(schema.matches);
   await db.delete(schema.tournamentParticipants);
   await db.delete(schema.tournaments);

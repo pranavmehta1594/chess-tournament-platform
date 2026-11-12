@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 import { DbService } from '../db/db.service.js';
 import * as schema from '../db/schema.js';
 
@@ -14,8 +14,13 @@ export interface ParticipantScore {
   losses: number;
   buchholzScore: number;
   rank: number;
-  opponents: string[];
 }
+
+export type PublicParticipantScore = Omit<ParticipantScore, 'scoreMillipoints'>;
+
+type ParticipantState = ParticipantScore & {
+  opponents: string[];
+};
 
 @Injectable()
 export class LeaderboardService {
@@ -33,7 +38,7 @@ export class LeaderboardService {
       result: 'WHITE_WIN' | 'BLACK_WIN' | 'DRAW' | 'ONGOING';
     }[],
   ): ParticipantScore[] {
-    const scoresMap = new Map<string, ParticipantScore>();
+    const scoresMap = new Map<string, ParticipantState>();
 
     for (const p of participants) {
       scoresMap.set(p.userId, {
@@ -121,7 +126,8 @@ export class LeaderboardService {
       player.rank = index + 1;
     });
 
-    return sorted;
+    // Opponent ids are calculation-only data and are not part of the API response.
+    return sorted.map(({ opponents, ...player }) => player);
   }
 
   /**
@@ -181,8 +187,37 @@ export class LeaderboardService {
     return standings;
   }
 
-  async getTournamentLeaderboard(tournamentId: string): Promise<ParticipantScore[]> {
-    return this.refreshTournamentStandings(tournamentId);
+  async getTournamentLeaderboard(tournamentId: string): Promise<PublicParticipantScore[]> {
+    // Match completion already refreshes and persists standings. Reads should not
+    // recalculate and write every participant row again on every page load.
+    const rows = await this.dbService.db
+      .select({
+        userId: schema.tournamentParticipants.userId,
+        name: schema.users.name,
+        email: schema.users.email,
+        scoreMillipoints: schema.tournamentParticipants.scoreMillipoints,
+        wins: schema.tournamentParticipants.wins,
+        draws: schema.tournamentParticipants.draws,
+        losses: schema.tournamentParticipants.losses,
+        buchholzScore: schema.tournamentParticipants.buchholzScore,
+      })
+      .from(schema.tournamentParticipants)
+      .innerJoin(
+        schema.users,
+        eq(schema.tournamentParticipants.userId, schema.users.id),
+      )
+      .where(eq(schema.tournamentParticipants.tournamentId, tournamentId))
+      .orderBy(
+        desc(schema.tournamentParticipants.scoreMillipoints),
+        desc(schema.tournamentParticipants.buchholzScore),
+        desc(schema.tournamentParticipants.wins),
+      );
+
+    return rows.map(({ scoreMillipoints, ...row }, index) => ({
+      ...row,
+      score: scoreMillipoints / 1000,
+      rank: index + 1,
+    }));
   }
 }
 

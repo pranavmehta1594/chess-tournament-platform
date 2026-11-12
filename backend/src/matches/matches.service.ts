@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { eq, or, desc } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { DbService } from '../db/db.service.js';
 import * as schema from '../db/schema.js';
 
@@ -8,9 +9,37 @@ export class MatchesService {
   constructor(private readonly dbService: DbService) {}
 
   async findOne(id: string) {
+    const whitePlayer = alias(schema.users, 'match_detail_white_player');
+    const blackPlayer = alias(schema.users, 'match_detail_black_player');
+
     const [match] = await this.dbService.db
-      .select()
+      .select({
+        id: schema.matches.id,
+        tournamentId: schema.matches.tournamentId,
+        whitePlayerId: schema.matches.whitePlayerId,
+        blackPlayerId: schema.matches.blackPlayerId,
+        status: schema.matches.status,
+        result: schema.matches.result,
+        terminationReason: schema.matches.terminationReason,
+        pgn: schema.matches.pgn,
+        finalFen: schema.matches.finalFen,
+        whiteTimeRemainingMs: schema.matches.whiteTimeRemainingMs,
+        blackTimeRemainingMs: schema.matches.blackTimeRemainingMs,
+        whitePlayer: {
+          name: whitePlayer.name,
+        },
+        blackPlayer: {
+          name: blackPlayer.name,
+        },
+        tournament: {
+          name: schema.tournaments.name,
+          timeControl: schema.tournaments.timeControl,
+        },
+      })
       .from(schema.matches)
+      .innerJoin(whitePlayer, eq(schema.matches.whitePlayerId, whitePlayer.id))
+      .innerJoin(blackPlayer, eq(schema.matches.blackPlayerId, blackPlayer.id))
+      .innerJoin(schema.tournaments, eq(schema.matches.tournamentId, schema.tournaments.id))
       .where(eq(schema.matches.id, id))
       .limit(1);
 
@@ -18,35 +47,20 @@ export class MatchesService {
       throw new NotFoundException(`Match with ID ${id} not found`);
     }
 
-    const [whiteUser] = await this.dbService.db
-      .select({ id: schema.users.id, name: schema.users.name, email: schema.users.email })
-      .from(schema.users)
-      .where(eq(schema.users.id, match.whitePlayerId))
-      .limit(1);
-
-    const [blackUser] = await this.dbService.db
-      .select({ id: schema.users.id, name: schema.users.name, email: schema.users.email })
-      .from(schema.users)
-      .where(eq(schema.users.id, match.blackPlayerId))
-      .limit(1);
-
-    const moves = await this.dbService.db
-      .select()
-      .from(schema.matchMoves)
-      .where(eq(schema.matchMoves.matchId, id))
-      .orderBy(schema.matchMoves.moveNumber);
-
-    return {
-      ...match,
-      whitePlayer: whiteUser,
-      blackPlayer: blackUser,
-      moves,
-    };
+    return match;
   }
 
   async findUserMatches(userId: string) {
-    const userMatches = await this.dbService.db
-      .select()
+    const activeMatches = await this.dbService.db
+      .select({
+        id: schema.matches.id,
+        status: schema.matches.status,
+        whitePlayerId: schema.matches.whitePlayerId,
+        blackPlayerId: schema.matches.blackPlayerId,
+        whiteTimeRemainingMs: schema.matches.whiteTimeRemainingMs,
+        blackTimeRemainingMs: schema.matches.blackTimeRemainingMs,
+        startedAt: schema.matches.startedAt,
+      })
       .from(schema.matches)
       .where(
         or(
@@ -56,8 +70,7 @@ export class MatchesService {
       )
       .orderBy(desc(schema.matches.startedAt));
 
-    const enriched = [];
-    for (const m of userMatches) {
+    for (const m of activeMatches) {
       // Auto-finalize any stale match whose clock has elapsed
       if (m.status === 'IN_PROGRESS') {
         const totalMaxMs = (m.whiteTimeRemainingMs || 300000) + (m.blackTimeRemainingMs || 300000);
@@ -74,40 +87,48 @@ export class MatchesService {
             })
             .where(eq(schema.matches.id, m.id));
 
-          m.status = 'COMPLETED';
-          m.result = result;
-          m.terminationReason = 'TIMEOUT';
-          m.endedAt = new Date();
         }
       }
-
-      const [whiteUser] = await this.dbService.db
-        .select({ id: schema.users.id, name: schema.users.name, email: schema.users.email })
-        .from(schema.users)
-        .where(eq(schema.users.id, m.whitePlayerId))
-        .limit(1);
-
-      const [blackUser] = await this.dbService.db
-        .select({ id: schema.users.id, name: schema.users.name, email: schema.users.email })
-        .from(schema.users)
-        .where(eq(schema.users.id, m.blackPlayerId))
-        .limit(1);
-
-      const [tournament] = await this.dbService.db
-        .select({ id: schema.tournaments.id, name: schema.tournaments.name })
-        .from(schema.tournaments)
-        .where(eq(schema.tournaments.id, m.tournamentId))
-        .limit(1);
-
-      enriched.push({
-        ...m,
-        whitePlayer: whiteUser,
-        blackPlayer: blackUser,
-        tournament,
-      });
     }
 
-    return enriched;
+    const whitePlayer = alias(schema.users, 'history_white_player');
+    const blackPlayer = alias(schema.users, 'history_black_player');
+
+    const userMatches = await this.dbService.db
+      .select({
+        id: schema.matches.id,
+        whitePlayerId: schema.matches.whitePlayerId,
+        blackPlayerId: schema.matches.blackPlayerId,
+        status: schema.matches.status,
+        result: schema.matches.result,
+        terminationReason: schema.matches.terminationReason,
+        startedAt: schema.matches.startedAt,
+        endedAt: schema.matches.endedAt,
+        whiteTimeRemainingMs: schema.matches.whiteTimeRemainingMs,
+        blackTimeRemainingMs: schema.matches.blackTimeRemainingMs,
+        whitePlayer: {
+          name: whitePlayer.name,
+        },
+        blackPlayer: {
+          name: blackPlayer.name,
+        },
+        tournament: {
+          name: schema.tournaments.name,
+        },
+      })
+      .from(schema.matches)
+      .innerJoin(whitePlayer, eq(schema.matches.whitePlayerId, whitePlayer.id))
+      .innerJoin(blackPlayer, eq(schema.matches.blackPlayerId, blackPlayer.id))
+      .innerJoin(schema.tournaments, eq(schema.matches.tournamentId, schema.tournaments.id))
+      .where(
+        or(
+          eq(schema.matches.whitePlayerId, userId),
+          eq(schema.matches.blackPlayerId, userId),
+        ),
+      )
+      .orderBy(desc(schema.matches.startedAt));
+
+    return userMatches;
   }
 }
 

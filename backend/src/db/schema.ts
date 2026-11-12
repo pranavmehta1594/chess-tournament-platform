@@ -72,19 +72,6 @@ export const matches = pgTable('matches', {
   endedAt: timestamp('ended_at', { withTimezone: true }),
 });
 
-// 5. Match Moves
-export const matchMoves = pgTable('match_moves', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  matchId: uuid('match_id').references(() => matches.id, { onDelete: 'cascade' }).notNull(),
-  moveNumber: integer('move_number').notNull(),
-  color: varchar('color', { length: 1 }).notNull(), // 'w' | 'b'
-  san: varchar('san', { length: 20 }).notNull(),
-  uci: varchar('uci', { length: 20 }).notNull(),
-  fenAfter: text('fen_after').notNull(),
-  timeSpentMs: integer('time_spent_ms').notNull().default(0),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-});
-
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   participations: many(tournamentParticipants),
@@ -131,14 +118,6 @@ export const matchesRelations = relations(matches, ({ one, many }) => ({
     fields: [matches.blackPlayerId],
     references: [users.id],
     relationName: 'blackPlayer',
-  }),
-  moves: many(matchMoves),
-}));
-
-export const matchMovesRelations = relations(matchMoves, ({ one }) => ({
-  match: one(matches, {
-    fields: [matchMoves.matchId],
-    references: [matches.id],
   }),
 }));
 

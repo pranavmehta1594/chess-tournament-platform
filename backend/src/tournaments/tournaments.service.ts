@@ -1,10 +1,10 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc, and, count } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { DbService } from '../db/db.service.js';
 import * as schema from '../db/schema.js';
 import { CreateTournamentDto } from './dto/create-tournament.dto.js';
@@ -53,34 +53,26 @@ export class TournamentsService {
         id: schema.tournaments.id,
         name: schema.tournaments.name,
         timeControl: schema.tournaments.timeControl,
-        initialTimeSeconds: schema.tournaments.initialTimeSeconds,
-        incrementSeconds: schema.tournaments.incrementSeconds,
         startDateTime: schema.tournaments.startDateTime,
         status: schema.tournaments.status,
-        createdBy: schema.tournaments.createdBy,
-        creatorName: schema.users.name,
-        winnerId: schema.tournaments.winnerId,
-        createdAt: schema.tournaments.createdAt,
+        participantCount: count(schema.tournamentParticipants.id).mapWith(Number),
       })
       .from(schema.tournaments)
-      .leftJoin(schema.users, eq(schema.tournaments.createdBy, schema.users.id))
+      .leftJoin(
+        schema.tournamentParticipants,
+        eq(schema.tournamentParticipants.tournamentId, schema.tournaments.id),
+      )
+      .groupBy(
+        schema.tournaments.id,
+        schema.tournaments.name,
+        schema.tournaments.timeControl,
+        schema.tournaments.startDateTime,
+        schema.tournaments.status,
+        schema.tournaments.createdAt,
+      )
       .orderBy(desc(schema.tournaments.createdAt));
 
-    // Attach participant counts
-    const results = [];
-    for (const t of allTournaments) {
-      const participants = await this.dbService.db
-        .select({ id: schema.tournamentParticipants.id })
-        .from(schema.tournamentParticipants)
-        .where(eq(schema.tournamentParticipants.tournamentId, t.id));
-
-      results.push({
-        ...t,
-        participantCount: participants.length,
-      });
-    }
-
-    return results;
+    return allTournaments;
   }
 
   async findOne(id: string) {
@@ -89,14 +81,9 @@ export class TournamentsService {
         id: schema.tournaments.id,
         name: schema.tournaments.name,
         timeControl: schema.tournaments.timeControl,
-        initialTimeSeconds: schema.tournaments.initialTimeSeconds,
-        incrementSeconds: schema.tournaments.incrementSeconds,
         startDateTime: schema.tournaments.startDateTime,
         status: schema.tournaments.status,
-        createdBy: schema.tournaments.createdBy,
         creatorName: schema.users.name,
-        winnerId: schema.tournaments.winnerId,
-        createdAt: schema.tournaments.createdAt,
       })
       .from(schema.tournaments)
       .leftJoin(schema.users, eq(schema.tournaments.createdBy, schema.users.id))
@@ -113,11 +100,6 @@ export class TournamentsService {
         userId: schema.users.id,
         name: schema.users.name,
         email: schema.users.email,
-        scoreMillipoints: schema.tournamentParticipants.scoreMillipoints,
-        wins: schema.tournamentParticipants.wins,
-        draws: schema.tournamentParticipants.draws,
-        losses: schema.tournamentParticipants.losses,
-        joinedAt: schema.tournamentParticipants.joinedAt,
       })
       .from(schema.tournamentParticipants)
       .innerJoin(
@@ -258,48 +240,29 @@ export class TournamentsService {
   }
 
   async getMatches(tournamentId: string) {
+    const whitePlayer = alias(schema.users, 'tournament_match_white_player');
+    const blackPlayer = alias(schema.users, 'tournament_match_black_player');
+
     const matchesList = await this.dbService.db
       .select({
         id: schema.matches.id,
-        tournamentId: schema.matches.tournamentId,
         status: schema.matches.status,
-        result: schema.matches.result,
         terminationReason: schema.matches.terminationReason,
-        pgn: schema.matches.pgn,
-        finalFen: schema.matches.finalFen,
-        whitePlayerId: schema.matches.whitePlayerId,
-        blackPlayerId: schema.matches.blackPlayerId,
-        whiteTimeRemainingMs: schema.matches.whiteTimeRemainingMs,
-        blackTimeRemainingMs: schema.matches.blackTimeRemainingMs,
         startedAt: schema.matches.startedAt,
-        endedAt: schema.matches.endedAt,
+        whitePlayer: {
+          name: whitePlayer.name,
+        },
+        blackPlayer: {
+          name: blackPlayer.name,
+        },
       })
       .from(schema.matches)
+      .innerJoin(whitePlayer, eq(schema.matches.whitePlayerId, whitePlayer.id))
+      .innerJoin(blackPlayer, eq(schema.matches.blackPlayerId, blackPlayer.id))
       .where(eq(schema.matches.tournamentId, tournamentId))
       .orderBy(desc(schema.matches.startedAt));
 
-    const enriched = [];
-    for (const m of matchesList) {
-      const [whiteUser] = await this.dbService.db
-        .select({ id: schema.users.id, name: schema.users.name, email: schema.users.email })
-        .from(schema.users)
-        .where(eq(schema.users.id, m.whitePlayerId))
-        .limit(1);
-
-      const [blackUser] = await this.dbService.db
-        .select({ id: schema.users.id, name: schema.users.name, email: schema.users.email })
-        .from(schema.users)
-        .where(eq(schema.users.id, m.blackPlayerId))
-        .limit(1);
-
-      enriched.push({
-        ...m,
-        whitePlayer: whiteUser,
-        blackPlayer: blackUser,
-      });
-    }
-
-    return enriched;
+    return matchesList;
   }
 }
 

@@ -30,9 +30,9 @@ interface MatchItem {
   endedAt?: string;
   whiteTimeRemainingMs?: number;
   blackTimeRemainingMs?: number;
-  whitePlayer?: { id: string; name: string; email: string };
-  blackPlayer?: { id: string; name: string; email: string };
-  tournament?: { id: string; name: string };
+  whitePlayer?: { name: string };
+  blackPlayer?: { name: string };
+  tournament?: { name: string };
 }
 
 function formatMatchDate(dateStr: string | Date | undefined | null): string {

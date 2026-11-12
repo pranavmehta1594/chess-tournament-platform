@@ -46,13 +46,11 @@ interface LeaderboardEntry {
 
 interface MatchItem {
   id: string;
-  whitePlayer: { id: string; name: string };
-  blackPlayer: { id: string; name: string };
+  whitePlayer: { name: string };
+  blackPlayer: { name: string };
   status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'ABORTED';
-  result: 'WHITE_WIN' | 'BLACK_WIN' | 'DRAW' | 'ONGOING';
   terminationReason?: string;
   startedAt: string;
-  endedAt?: string;
 }
 
 function LeftLaurelBranch() {
@@ -459,7 +457,12 @@ function TournamentDetailPage() {
             <div className="shrink-0 flex items-center lg:self-center">
               {user?.role === 'STUDENT' && (
                 <>
-                  {!isEnrolled ? (
+                  {tournament.status === 'COMPLETED' ? (
+                    <span className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#3B2418]/90 border border-[#C49A52]/50 text-[#E5B869] font-bold text-sm sm:text-base shadow-lg">
+                      <Trophy className="w-5 h-5 text-[#E5B869]" />
+                      <span>Tournament Completed</span>
+                    </span>
+                  ) : !isEnrolled ? (
                     <button
                       onClick={() => joinMutation.mutate()}
                       disabled={joinMutation.isPending}

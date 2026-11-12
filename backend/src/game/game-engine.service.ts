@@ -247,18 +247,6 @@ export class GameEngineService {
     state.lastTurnStartTime = now;
     state.drawOfferFrom = null; // Clear any pending draw offer on move
 
-    // Record move in DB
-    const moveCount = state.chess.history().length;
-    await this.dbService.db.insert(schema.matchMoves).values({
-      matchId: state.matchId,
-      moveNumber: moveCount,
-      color: moveObj.color,
-      san: moveObj.san,
-      uci: `${moveObj.from}${moveObj.to}${moveObj.promotion || ''}`,
-      fenAfter: state.chess.fen(),
-      timeSpentMs: elapsed,
-    });
-
     // Persist current board state, PGN, and clocks into matches table
     await this.dbService.db
       .update(schema.matches)
