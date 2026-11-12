@@ -150,8 +150,29 @@ function MyMatchesPage() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-36 rounded-2xl bg-[var(--surface)] border border-[var(--border)] animate-pulse p-6"
-              />
+                className="rounded-2xl bg-[var(--surface)] border border-[var(--border)] animate-pulse p-5 sm:p-6 shadow-sm space-y-4"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="h-6 w-24 rounded-full bg-[var(--border)]" />
+                  <div className="h-4 w-48 rounded bg-[var(--border)]/60" />
+                </div>
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-2">
+                  <div className="flex items-center gap-4">
+                    <div className="w-11 h-11 rounded-full bg-[var(--border)]" />
+                    <div className="space-y-1.5">
+                      <div className="h-4 w-28 rounded bg-[var(--border)]" />
+                      <div className="h-3 w-16 rounded bg-[var(--border)]/60" />
+                    </div>
+                    <div className="w-6 h-4 rounded bg-[var(--border)]/40" />
+                    <div className="w-11 h-11 rounded-full bg-[var(--border)]" />
+                    <div className="space-y-1.5">
+                      <div className="h-4 w-28 rounded bg-[var(--border)]" />
+                      <div className="h-3 w-16 rounded bg-[var(--border)]/60" />
+                    </div>
+                  </div>
+                  <div className="h-10 w-28 rounded-xl bg-[var(--border)]" />
+                </div>
+              </div>
             ))}
           </div>
         )}

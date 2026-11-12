@@ -116,6 +116,123 @@ function BronzeMedalBadge() {
   );
 }
 
+function LeaderboardTableSkeleton() {
+  return (
+    <div className="w-full rounded-[20px] overflow-hidden border border-[#E4D5C0] bg-[#FFF9EF] shadow-md">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm border-collapse">
+          {/* Header */}
+          <thead className="bg-[#3B2418] text-[#E4D5C0] text-xs font-bold uppercase tracking-wider">
+            <tr>
+              <th className="py-4 px-4 w-20 text-center">Rank</th>
+              <th className="py-4 px-6 text-left">Player</th>
+              <th className="py-4 px-4 w-28 text-center">Points</th>
+              <th className="py-4 px-4 w-40 text-center">W / D / L</th>
+              <th className="py-4 px-6 w-44 text-center">Buchholz Tiebreak</th>
+            </tr>
+          </thead>
+
+          {/* Skeleton Body */}
+          <tbody className="divide-y divide-[#E4D5C0]">
+            {[1, 2, 3, 4, 5].map((idx) => {
+              const isFirst = idx === 1;
+              return (
+                <tr
+                  key={idx}
+                  className={`${isFirst ? 'bg-[#FDF3DE]/70' : 'bg-[#FFF9EF]'} transition-colors`}
+                >
+                  {/* Rank Column Skeleton */}
+                  <td className="py-3.5 px-4 text-center">
+                    <div className="w-7 h-7 mx-auto rounded-full bg-[#E4D5C0]/80 animate-pulse" />
+                  </td>
+
+                  {/* Player Column Skeleton */}
+                  <td className="py-3.5 px-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#E4D5C0]/80 animate-pulse shrink-0" />
+                      <div className="space-y-2 flex-1">
+                        <div className="h-4 w-28 sm:w-36 rounded-md bg-[#E4D5C0]/80 animate-pulse" />
+                        <div className="h-3 w-40 sm:w-52 rounded-md bg-[#E4D5C0]/50 animate-pulse" />
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Points Column Skeleton */}
+                  <td className="py-3.5 px-4 text-center">
+                    <div className="h-6 w-10 mx-auto rounded-full bg-[#D4A359]/30 animate-pulse" />
+                  </td>
+
+                  {/* W / D / L Column Skeleton */}
+                  <td className="py-3.5 px-4 text-center">
+                    <div className="h-4 w-24 mx-auto rounded-md bg-[#E4D5C0]/70 animate-pulse" />
+                  </td>
+
+                  {/* Buchholz Tiebreak Column Skeleton */}
+                  <td className="py-3.5 px-6 text-center">
+                    <div className="h-4 w-12 mx-auto rounded-md bg-[#E4D5C0]/70 animate-pulse" />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function TournamentPageSkeleton() {
+  return (
+    <div
+      className="relative min-h-[calc(100vh-64px)] bg-cover bg-right sm:bg-center bg-no-repeat bg-fixed overflow-x-hidden"
+      style={{
+        backgroundImage: "url('/images/tournaments-bg.jpg')",
+        backgroundColor: 'var(--background)',
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-r from-white/85 via-white/60 via-50% to-white/10 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/5 pointer-events-none" />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-7">
+        {/* Banner Skeleton */}
+        <div
+          className="relative w-full rounded-[22px] overflow-hidden border border-[#E4D5C0] shadow-md bg-[#24130A] min-h-[190px] p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+          style={{
+            backgroundImage: "url('/images/tournament-card-bg.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-[#24130A] via-[#24130A]/95 via-45% to-black/40 pointer-events-none" />
+          <div className="relative z-10 space-y-3.5 max-w-2xl w-full">
+            <div className="flex items-center gap-3">
+              <div className="h-6 w-24 rounded-full bg-white/20 animate-pulse" />
+              <div className="h-6 w-20 rounded-full bg-white/20 animate-pulse" />
+              <div className="h-4 w-36 rounded bg-white/10 animate-pulse" />
+            </div>
+            <div className="h-9 w-3/4 max-w-md rounded-lg bg-white/25 animate-pulse" />
+            <div className="flex items-center gap-5">
+              <div className="h-4 w-32 rounded bg-white/20 animate-pulse" />
+              <div className="h-4 w-40 rounded bg-white/20 animate-pulse" />
+            </div>
+          </div>
+          <div className="relative z-10 h-12 w-40 rounded-xl bg-[#D4A359]/30 animate-pulse self-start lg:self-center shrink-0" />
+        </div>
+
+        {/* Tabs Bar Skeleton */}
+        <div className="flex items-center gap-8 border-b border-[var(--border)] pb-3">
+          <div className="h-5 w-36 rounded bg-[#E4D5C0] animate-pulse" />
+          <div className="h-5 w-44 rounded bg-[#E4D5C0]/60 animate-pulse" />
+          <div className="h-5 w-32 rounded bg-[#E4D5C0]/60 animate-pulse" />
+        </div>
+
+        {/* Leaderboard Table Skeleton */}
+        <LeaderboardTableSkeleton />
+      </div>
+    </div>
+  );
+}
+
 function TournamentDetailPage() {
   const params = useParams();
   const id = params?.id as string;
@@ -128,7 +245,7 @@ function TournamentDetailPage() {
   const [searchTimer, setSearchTimer] = useState(0);
 
   // Fetch tournament details
-  const { data: tournament, isLoading, error } = useQuery({
+  const { data: tournament, isLoading: isTournamentLoading, error } = useQuery({
     queryKey: ['tournament', id],
     queryFn: () => fetchApi(`/tournaments/${id}`),
     enabled: !!id,
@@ -136,7 +253,7 @@ function TournamentDetailPage() {
   });
 
   // Fetch leaderboard
-  const { data: leaderboard } = useQuery<LeaderboardEntry[]>({
+  const { data: leaderboard, isLoading: isLeaderboardLoading } = useQuery<LeaderboardEntry[]>({
     queryKey: ['tournament-leaderboard', id],
     queryFn: () => fetchApi(`/tournaments/${id}/leaderboard`),
     enabled: !!id,
@@ -144,7 +261,7 @@ function TournamentDetailPage() {
   });
 
   // Fetch matches
-  const { data: matches } = useQuery<MatchItem[]>({
+  const { data: matches, isLoading: isMatchesLoading } = useQuery<MatchItem[]>({
     queryKey: ['tournament-matches', id],
     queryFn: () => fetchApi(`/tournaments/${id}/matches`),
     enabled: !!id,
@@ -244,12 +361,8 @@ function TournamentDetailPage() {
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
-  if (isLoading || !tournament) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-        <div className="h-44 bg-[var(--surface)] border border-[var(--border)] rounded-2xl animate-pulse" />
-      </div>
-    );
+  if (isTournamentLoading || !tournament) {
+    return <TournamentPageSkeleton />;
   }
 
   if (error) {
@@ -451,126 +564,146 @@ function TournamentDetailPage() {
 
         {/* Tab 1: Live Leaderboard Table */}
         {activeTab === 'leaderboard' && (
-          <div className="w-full rounded-[20px] overflow-hidden border border-[#E4D5C0] bg-[#FFF9EF] shadow-md">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm border-collapse">
-                {/* Header */}
-                <thead className="bg-[#3B2418] text-[#E4D5C0] text-xs font-bold uppercase tracking-wider">
-                  <tr>
-                    <th className="py-4 px-4 w-20 text-center">Rank</th>
-                    <th className="py-4 px-6 text-left">Player</th>
-                    <th className="py-4 px-4 w-28 text-center">Points</th>
-                    <th className="py-4 px-4 w-40 text-center">W / D / L</th>
-                    <th className="py-4 px-6 w-44 text-center">Buchholz Tiebreak</th>
-                  </tr>
-                </thead>
-
-                {/* Body */}
-                <tbody className="divide-y divide-[#E4D5C0]">
-                  {leaderboard?.length === 0 ? (
+          isLeaderboardLoading || !leaderboard ? (
+            <LeaderboardTableSkeleton />
+          ) : (
+            <div className="w-full rounded-[20px] overflow-hidden border border-[#E4D5C0] bg-[#FFF9EF] shadow-md">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm border-collapse">
+                  {/* Header */}
+                  <thead className="bg-[#3B2418] text-[#E4D5C0] text-xs font-bold uppercase tracking-wider">
                     <tr>
-                      <td colSpan={5} className="py-12 text-center text-[var(--muted)] italic">
-                        No matches completed yet. Scores will update live as games finish.
-                      </td>
+                      <th className="py-4 px-4 w-20 text-center">Rank</th>
+                      <th className="py-4 px-6 text-left">Player</th>
+                      <th className="py-4 px-4 w-28 text-center">Points</th>
+                      <th className="py-4 px-4 w-40 text-center">W / D / L</th>
+                      <th className="py-4 px-6 w-44 text-center">Buchholz Tiebreak</th>
                     </tr>
-                  ) : (
-                    leaderboard?.map((entry) => {
-                      const isCurrentUser = entry.userId === user?.id;
-                      const rowBg = entry.rank === 1 || isCurrentUser
-                        ? 'bg-[#FDF3DE]/90 hover:bg-[#FDF3DE]'
-                        : 'bg-[#FFF9EF] hover:bg-[#F5EBDD]/60';
+                  </thead>
 
-                      return (
-                        <tr
-                          key={entry.userId}
-                          className={`${rowBg} transition-colors`}
-                        >
-                          {/* Rank Column */}
-                          <td className="py-3.5 px-4 text-center font-bold">
-                            {entry.rank === 1 ? (
-                              <GoldMedalBadge />
-                            ) : entry.rank === 2 ? (
-                              <SilverMedalBadge />
-                            ) : entry.rank === 3 ? (
-                              <BronzeMedalBadge />
-                            ) : (
-                              <span className="text-xs font-semibold text-[var(--muted)]">
-                                #{entry.rank}
-                              </span>
-                            )}
-                          </td>
+                  {/* Body */}
+                  <tbody className="divide-y divide-[#E4D5C0]">
+                    {leaderboard.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="py-12 text-center text-[var(--muted)] italic">
+                          No matches completed yet. Scores will update live as games finish.
+                        </td>
+                      </tr>
+                    ) : (
+                      leaderboard.map((entry) => {
+                        const isCurrentUser = entry.userId === user?.id;
+                        const rowBg = entry.rank === 1 || isCurrentUser
+                          ? 'bg-[#FDF3DE]/90 hover:bg-[#FDF3DE]'
+                          : 'bg-[#FFF9EF] hover:bg-[#F5EBDD]/60';
 
-                          {/* Player Column */}
-                          <td className="py-3.5 px-6">
-                            <div className="flex items-center gap-3">
-                              {/* Avatar */}
+                        return (
+                          <tr
+                            key={entry.userId}
+                            className={`${rowBg} transition-colors`}
+                          >
+                            {/* Rank Column */}
+                            <td className="py-3.5 px-4 text-center font-bold">
                               {entry.rank === 1 ? (
-                                <div className="w-10 h-10 rounded-full bg-[#261A13] border border-[#C49A52]/60 flex items-center justify-center text-lg text-[#C49A52] shrink-0 shadow-xs">
-                                  ♚
-                                </div>
+                                <GoldMedalBadge />
+                              ) : entry.rank === 2 ? (
+                                <SilverMedalBadge />
+                              ) : entry.rank === 3 ? (
+                                <BronzeMedalBadge />
                               ) : (
-                                <div className="w-10 h-10 rounded-full bg-[var(--background)] border border-[var(--border)] flex items-center justify-center text-base text-[var(--foreground)] shrink-0 shadow-xs">
-                                  ♟
-                                </div>
+                                <span className="text-xs font-semibold text-[var(--muted)]">
+                                  #{entry.rank}
+                                </span>
                               )}
+                            </td>
 
-                              {/* Info */}
-                              <div className="min-w-0">
-                                <div className="font-bold text-sm text-[var(--foreground)] flex items-center gap-2">
-                                  <span>{entry.name}</span>
-                                  {isCurrentUser && (
-                                    <span className="bg-[#D4A359]/30 text-[#8B5738] border border-[#D4A359]/50 text-[10px] font-bold px-2 py-0.5 rounded-full leading-none">
-                                      You
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="text-xs text-[var(--muted)] truncate">
-                                  {entry.email}
+                            {/* Player Column */}
+                            <td className="py-3.5 px-6">
+                              <div className="flex items-center gap-3">
+                                {/* Avatar */}
+                                {entry.rank === 1 ? (
+                                  <div className="w-10 h-10 rounded-full bg-[#261A13] border border-[#C49A52]/60 flex items-center justify-center text-lg text-[#C49A52] shrink-0 shadow-xs">
+                                    ♚
+                                  </div>
+                                ) : (
+                                  <div className="w-10 h-10 rounded-full bg-[var(--background)] border border-[var(--border)] flex items-center justify-center text-base text-[var(--foreground)] shrink-0 shadow-xs">
+                                    ♟
+                                  </div>
+                                )}
+
+                                {/* Info */}
+                                <div className="min-w-0">
+                                  <div className="font-bold text-sm text-[var(--foreground)] flex items-center gap-2">
+                                    <span>{entry.name}</span>
+                                    {isCurrentUser && (
+                                      <span className="bg-[#D4A359]/30 text-[#8B5738] border border-[#D4A359]/50 text-[10px] font-bold px-2 py-0.5 rounded-full leading-none">
+                                        You
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-[var(--muted)] truncate">
+                                    {entry.email}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </td>
+                            </td>
 
-                          {/* Points Column */}
-                          <td className="py-3.5 px-4 text-center">
-                            <span className="inline-block bg-[#D4A359]/25 text-[#261A13] font-bold text-sm px-3 py-0.5 rounded-full">
-                              {entry.score}
-                            </span>
-                          </td>
+                            {/* Points Column */}
+                            <td className="py-3.5 px-4 text-center">
+                              <span className="inline-block bg-[#D4A359]/25 text-[#261A13] font-bold text-sm px-3 py-0.5 rounded-full">
+                                {entry.score}
+                              </span>
+                            </td>
 
-                          {/* W / D / L Column */}
-                          <td className="py-3.5 px-4 text-center text-xs font-semibold tracking-wide">
-                            <span className="text-emerald-700">{entry.wins}W</span>
-                            <span className="text-[var(--muted)]"> / </span>
-                            <span className="text-amber-800">{entry.draws}D</span>
-                            <span className="text-[var(--muted)]"> / </span>
-                            <span className="text-rose-700">{entry.losses}L</span>
-                          </td>
+                            {/* W / D / L Column */}
+                            <td className="py-3.5 px-4 text-center text-xs font-semibold tracking-wide">
+                              <span className="text-emerald-700">{entry.wins}W</span>
+                              <span className="text-[var(--muted)]"> / </span>
+                              <span className="text-amber-800">{entry.draws}D</span>
+                              <span className="text-[var(--muted)]"> / </span>
+                              <span className="text-rose-700">{entry.losses}L</span>
+                            </td>
 
-                          {/* Buchholz Tiebreak Column */}
-                          <td className="py-3.5 px-6 text-center text-sm font-medium text-[var(--foreground)]">
-                            {(entry.buchholzScore / 1000).toFixed(1)}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
+                            {/* Buchholz Tiebreak Column */}
+                            <td className="py-3.5 px-6 text-center text-sm font-medium text-[var(--foreground)]">
+                              {(entry.buchholzScore / 1000).toFixed(1)}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          )
         )}
 
         {/* Tab 2: Matches & Results Tab */}
         {activeTab === 'matches' && (
           <div className="space-y-4">
-            {matches?.length === 0 ? (
+            {isMatchesLoading || !matches ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="p-5 rounded-2xl bg-[#FFF9EF] border border-[#E4D5C0] shadow-sm flex items-center justify-between gap-4 animate-pulse"
+                  >
+                    <div className="space-y-2.5 flex-1">
+                      <div className="h-4 w-20 rounded-full bg-[#E4D5C0]" />
+                      <div className="h-4 w-44 rounded bg-[#E4D5C0]" />
+                      <div className="h-3 w-28 rounded bg-[#E4D5C0]/60" />
+                    </div>
+                    <div className="h-8 w-16 rounded-xl bg-[#E4D5C0]" />
+                  </div>
+                ))}
+              </div>
+            ) : matches.length === 0 ? (
               <div className="text-center py-12 bg-[#FFF9EF] border border-[#E4D5C0] rounded-2xl text-[var(--muted)] italic">
                 No matches have taken place yet.
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {matches?.map((m) => (
+                {matches.map((m) => (
                   <div
                     key={m.id}
                     className="p-5 rounded-2xl bg-[#FFF9EF] border border-[#E4D5C0] shadow-sm hover:shadow-md transition-all flex items-center justify-between gap-4"
