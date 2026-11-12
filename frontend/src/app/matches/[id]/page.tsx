@@ -13,6 +13,17 @@ import { GameOverModal } from '../../../components/chess/GameOverModal';
 import { DrawOfferModal } from '../../../components/chess/DrawOfferModal';
 import { getCapturedPieces } from '../../../components/chess/CapturedPieces';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../../../components/ui/alert-dialog';
+import {
   Trophy,
   Swords,
   ChevronRight,
@@ -57,6 +68,9 @@ function LiveMatchPage() {
   // Draw offer state
   const [isDrawOfferModalOpen, setIsDrawOfferModalOpen] = useState(false);
   const [drawOfferFromUser, setDrawOfferFromUser] = useState('');
+  const [isDrawSentDialogOpen, setIsDrawSentDialogOpen] = useState(false);
+  const [isDrawDeclinedDialogOpen, setIsDrawDeclinedDialogOpen] = useState(false);
+  const [moveErrorMessage, setMoveErrorMessage] = useState<string | null>(null);
 
   // Left Sidebar Tabs
   const [leftTab, setLeftTab] = useState<'match' | 'pgn' | 'details'>('match');
@@ -155,7 +169,7 @@ function LiveMatchPage() {
     };
 
     const handleDrawDeclined = () => {
-      alert('Draw offer was declined by opponent.');
+      setIsDrawDeclinedDialogOpen(true);
     };
 
     socket.on('match:move_applied', handleMoveApplied);
@@ -283,24 +297,23 @@ function LiveMatchPage() {
       },
       (res: any) => {
         if (res && !res.success) {
-          alert(res.error || 'Invalid move rejected by server');
+          setMoveErrorMessage(res.error || 'Invalid move rejected by server');
         }
       },
     );
     return true;
   };
 
-  const handleResign = () => {
-    if (!confirm('Are you sure you want to resign this match?')) return;
+  const handleConfirmResign = () => {
     const socket = getSocket();
     socket.emit('match:resign', { matchId });
   };
 
-  const handleOfferDraw = () => {
+  const handleConfirmOfferDraw = () => {
     const socket = getSocket();
     socket.emit('match:offer_draw', { matchId }, (res: any) => {
       if (res?.success) {
-        alert('Draw offer sent to opponent.');
+        setIsDrawSentDialogOpen(true);
       }
     });
   };
@@ -695,21 +708,73 @@ function LiveMatchPage() {
               {/* Player In-Game Action Controls (Draw & Resign) */}
               {!isSpectator && matchStatus === 'IN_PROGRESS' && (
                 <div className="grid grid-cols-2 gap-2 pt-2">
-                  <button
-                    onClick={handleOfferDraw}
-                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-semibold text-white/90 hover:text-white transition-colors cursor-pointer"
-                  >
-                    <Handshake className="w-3.5 h-3.5 text-[#E5B869]" />
-                    <span>Offer Draw</span>
-                  </button>
+                  {/* Offer Draw Alert Dialog */}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        type="button"
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-semibold text-white/90 hover:text-white transition-colors cursor-pointer"
+                      >
+                        <Handshake className="w-3.5 h-3.5 text-[#E5B869]" />
+                        <span>Offer Draw</span>
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="font-serif font-bold text-lg text-[#3B2418]">
+                          Offer a Draw?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Send a draw proposal to your opponent. If they accept, the game will conclude immediately as a tie (0.5 points each).
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter className="mt-4 gap-2">
+                        <AlertDialogCancel className="rounded-xl border border-[#E4D5C0] text-[#261A13] hover:bg-[#F5EBDD] cursor-pointer">
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleConfirmOfferDraw}
+                          className="rounded-xl bg-[#3B2418] hover:bg-[#8B5738] text-white shadow-sm cursor-pointer"
+                        >
+                          Send Draw Offer
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
 
-                  <button
-                    onClick={handleResign}
-                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/40 text-xs font-semibold text-rose-300 hover:text-white transition-colors cursor-pointer"
-                  >
-                    <Flag className="w-3.5 h-3.5 text-rose-400" />
-                    <span>Resign</span>
-                  </button>
+                  {/* Resign Match Alert Dialog */}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        type="button"
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/40 text-xs font-semibold text-rose-300 hover:text-white transition-colors cursor-pointer"
+                      >
+                        <Flag className="w-3.5 h-3.5 text-rose-400" />
+                        <span>Resign</span>
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="font-serif font-bold text-lg text-rose-800">
+                          Resign Match?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to resign this match? Conceding the game will award victory (+1.0 point) to your opponent. This action cannot be reversed.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter className="mt-4 gap-2">
+                        <AlertDialogCancel className="rounded-xl border border-[#E4D5C0] text-[#261A13] hover:bg-[#F5EBDD] cursor-pointer">
+                          Keep Playing
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleConfirmResign}
+                          className="rounded-xl bg-rose-700 hover:bg-rose-800 text-white shadow-sm cursor-pointer"
+                        >
+                          Confirm Resignation
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               )}
             </div>
@@ -802,6 +867,75 @@ function LiveMatchPage() {
         onReturnToTournament={handleReturnToTournament}
         isSpectator={isSpectator}
       />
+
+      {/* Draw Offer Sent Notification Dialog */}
+      <AlertDialog open={isDrawSentDialogOpen} onOpenChange={setIsDrawSentDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-serif font-bold text-lg text-[#3B2418]">
+              Draw Offer Transmitted
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Your draw proposal has been sent to your opponent. You will be notified as soon as they accept or decline.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4">
+            <AlertDialogAction
+              onClick={() => setIsDrawSentDialogOpen(false)}
+              className="rounded-xl bg-[#3B2418] hover:bg-[#8B5738] text-white shadow-sm cursor-pointer"
+            >
+              Continue Game
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Draw Offer Declined Notification Dialog */}
+      <AlertDialog open={isDrawDeclinedDialogOpen} onOpenChange={setIsDrawDeclinedDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-serif font-bold text-lg text-[#3B2418]">
+              Draw Offer Declined
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Your opponent has declined the draw offer. The battle continues!
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4">
+            <AlertDialogAction
+              onClick={() => setIsDrawDeclinedDialogOpen(false)}
+              className="rounded-xl bg-[#3B2418] hover:bg-[#8B5738] text-white shadow-sm cursor-pointer"
+            >
+              Back to Board
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Move Error Dialog */}
+      <AlertDialog
+        open={!!moveErrorMessage}
+        onOpenChange={(open) => !open && setMoveErrorMessage(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-serif font-bold text-lg text-rose-700">
+              Invalid Move
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {moveErrorMessage || 'The move was rejected by the server.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4">
+            <AlertDialogAction
+              onClick={() => setMoveErrorMessage(null)}
+              className="rounded-xl bg-[#3B2418] hover:bg-[#8B5738] text-white shadow-sm cursor-pointer"
+            >
+              Understood
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Draw Offer Notification Dialog */}
       <DrawOfferModal
