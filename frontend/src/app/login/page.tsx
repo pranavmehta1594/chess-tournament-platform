@@ -7,13 +7,6 @@ import { Mail, Lock, Eye, EyeOff, AlertCircle, Sparkles, ChevronDown, ChevronUp 
 
 const SEED_USERS = [
   {
-    role: 'STUDENT',
-    name: 'Trader (Student)',
-    email: 'tradercompany@gmail.com',
-    pass: 'Password123!',
-    desc: 'Personal Account',
-  },
-  {
     role: 'COACH',
     name: 'Coach Magnus',
     email: 'coach@kingdom.chess',
@@ -87,7 +80,6 @@ export default function LoginPage() {
 
     // Support username shortcut matching
     const lower = trimmed.toLowerCase();
-    if (lower === 'trader' || lower === 'student') return 'tradercompany@gmail.com';
     if (lower === 'coach' || lower === 'magnus') return 'coach@kingdom.chess';
     if (lower === 'aryan' || lower === 'student1') return 'student1@kingdom.chess';
     if (lower === 'diya' || lower === 'student2') return 'student2@kingdom.chess';
