@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
+import { BACKEND_URL } from './config';
 
-const SOCKET_URL =
-  process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+const SOCKET_URL = BACKEND_URL;
 
 let socket: Socket | null = null;
 
