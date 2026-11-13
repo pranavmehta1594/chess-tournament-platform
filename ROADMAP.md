@@ -87,6 +87,7 @@ docker-compose.yml                PostgreSQL 16, backend, and frontend
 - [x] Drizzle migration files and `npm run db:migrate`.
 - [x] Seed data for one coach, four students, and one open tournament.
 - [x] Document that `npm run db:seed` deletes existing matches, participants, tournaments, and users before reseeding.
+- [x] Verify the fresh demo baseline: 1 coach, 4 students, 1 tournament, 4 enrolled participants, and 0 matches.
 - [ ] Make seeding explicitly idempotent or add a separate non-destructive demo-data command.
 
 ### API and security
@@ -135,6 +136,7 @@ docker-compose.yml                PostgreSQL 16, backend, and frontend
 - [x] `OPEN` tournament automatically transitions to `ONGOING` after the first match is created.
 - [x] Active players released after a match ends or a player leaves the queue.
 - [x] Re-queue support after a match ends.
+- [x] Return the created `matchId` in the `queue:join` acknowledgement and use a participant-filtered `match:started` fallback so both paired clients enter the match reliably.
 - [ ] Replace the in-memory queue with a durable queue or a distributed locking strategy before running multiple backend replicas.
 - [ ] Recover queued players and active-player state after a backend restart.
 - [ ] Add concurrency tests for simultaneous queue joins and duplicate pairing attempts.

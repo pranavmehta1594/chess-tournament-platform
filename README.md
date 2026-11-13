@@ -40,6 +40,18 @@ The database seed populates 1 Coach and 4 Students:
 
 > **Evaluator Delight**: The login screen and navigation bar include a **1-Click Fast Account Switcher**, allowing instant switching between Coach and Student accounts without typing passwords repeatedly.
 
+### Fresh demo database baseline
+
+The current demo database has been freshly reseeded with:
+
+- 1 coach account: `coach@kingdom.chess`
+- 4 student accounts: `student1@kingdom.chess` through `student4@kingdom.chess`
+- 1 open tournament: **Kingdom Blitz Championship 2026** (`5+0`)
+- All 4 students enrolled in the tournament
+- 0 matches, so the matchmaking flow starts cleanly
+
+To recreate this exact baseline, run `npm run db:seed` from `backend/`. The command is destructive: it deletes existing matches, tournament participants, tournaments, and users before inserting the dataset above.
+
 ---
 
 ## 🚀 Quick Setup & Getting Started
@@ -168,9 +180,9 @@ back to `https://kingdom-of-chess-api-kopw.onrender.com` when
 
 | Event Name | Direction | Payload | Description |
 | :--- | :--- | :--- | :--- |
-| `queue:join` | Client &rarr; Server | `{ tournamentId: string }` | Student enters tournament matchmaking queue. |
+| `queue:join` | Client &rarr; Server | `{ tournamentId: string }` | Student enters tournament matchmaking queue. The acknowledgement includes `matchId` when this request creates a match. |
 | `queue:leave` | Client &rarr; Server | `{ tournamentId?: string }` | Student cancels matchmaking search. |
-| `match:paired` | Server &rarr; Client | `{ matchId, tournamentId, color, opponent, initialTimeMs }` | Pushed to both players when matchmaking creates a match. Auto-redirects clients to `/matches/:id`. |
+| `match:paired` | Server &rarr; Client | `{ matchId, tournamentId, color, opponent, initialTimeMs }` | Pushed to both players when matchmaking creates a match. Auto-redirects clients to `/matches/:id`; `match:started` provides a tournament-room fallback. |
 | `match:join` | Client &rarr; Server | `{ matchId: string }` | Client joins match room; server returns snapshot with current FEN, PGN, and accurate clocks. |
 | `match:move` | Client &rarr; Server | `{ matchId: string, from: string, to: string, promotion?: string }` | Client submits move to server-authoritative engine. |
 | `match:move_applied` | Server &rarr; Client | `{ matchId, move, fen, pgn, turn, whiteTimeRemainingMs, blackTimeRemainingMs }` | Broadcast to match room after server confirms move legality and deducts elapsed clock time. |
