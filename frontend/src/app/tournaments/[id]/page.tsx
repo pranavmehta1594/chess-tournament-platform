@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../providers/auth-context';
@@ -255,6 +255,7 @@ function TournamentDetailPage() {
   const [activeTab, setActiveTab] = useState<'leaderboard' | 'matches' | 'participants'>('leaderboard');
   const [isSearching, setIsSearching] = useState(false);
   const [searchTimer, setSearchTimer] = useState(0);
+  const navigatedMatchIdRef = useRef<string | null>(null);
 
   // Fetch tournament details
   const { data: tournament, isLoading: isTournamentLoading, error } = useQuery({
@@ -311,13 +312,37 @@ function TournamentDetailPage() {
   });
 
   // Real-time Matchmaking Queue & Socket events
+  const navigateToPairedMatch = useCallback((matchId?: string) => {
+    if (!matchId || navigatedMatchIdRef.current === matchId) return;
+
+    navigatedMatchIdRef.current = matchId;
+    setIsSearching(false);
+    router.push(`/matches/${matchId}`);
+  }, [router]);
+
   useEffect(() => {
     if (!id || !user) return;
     const socket = getSocket();
 
-    const handlePaired = (data: { matchId: string }) => {
-      setIsSearching(false);
-      router.push(`/matches/${data.matchId}`);
+    const handlePaired = (data: { matchId: string; tournamentId?: string }) => {
+      if (data.tournamentId && data.tournamentId !== id) return;
+      navigateToPairedMatch(data.matchId);
+    };
+
+    // This is also broadcast to the tournament room. It covers a pairing
+    // notification missed during a socket reconnect, while only navigating
+    // the two actual participants.
+    const handleMatchStarted = (data: {
+      matchId: string;
+      whitePlayer?: { id?: string };
+      blackPlayer?: { id?: string };
+    }) => {
+      const isParticipant =
+        data.whitePlayer?.id === user.id || data.blackPlayer?.id === user.id;
+
+      if (isParticipant) {
+        navigateToPairedMatch(data.matchId);
+      }
     };
 
     const handleLeaderboardUpdate = (data: { tournamentId: string; standings: LeaderboardEntry[] }) => {
@@ -328,13 +353,15 @@ function TournamentDetailPage() {
     };
 
     socket.on('match:paired', handlePaired);
+    socket.on('match:started', handleMatchStarted);
     socket.on('leaderboard:updated', handleLeaderboardUpdate);
 
     return () => {
       socket.off('match:paired', handlePaired);
+      socket.off('match:started', handleMatchStarted);
       socket.off('leaderboard:updated', handleLeaderboardUpdate);
     };
-  }, [id, user, router, queryClient]);
+  }, [id, user, navigateToPairedMatch, queryClient]);
 
   // Searching timer
   useEffect(() => {
@@ -356,6 +383,10 @@ function TournamentDetailPage() {
       if (res && !res.success) {
         setIsSearching(false);
         alert(res.error || 'Failed to enter matchmaking queue');
+      } else if (res?.matchId) {
+        // The second player receives the pairing result in this ack. Use it
+        // directly so navigation does not depend on receiving the event too.
+        navigateToPairedMatch(res.matchId);
       }
     });
   };

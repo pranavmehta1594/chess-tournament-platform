@@ -179,7 +179,15 @@ export class GameGateway
         });
       }
 
-      return { success: true, inQueue: result.inQueue, queueLength: result.queueLength };
+      // Return the match id to the requester as well as emitting the event.
+      // The requester can otherwise miss `match:paired` if the socket event
+      // arrives while the page is changing or reconnecting.
+      return {
+        success: true,
+        inQueue: result.inQueue,
+        queueLength: result.queueLength,
+        matchId: result.paired?.matchId,
+      };
     } catch (err: any) {
       return { success: false, error: err.message };
     }
